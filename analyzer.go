@@ -60,7 +60,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 	usages := make(map[string]*FunctionUsage)
 
 	for _, packageFound := range packagesLoaded {
-		callerPkg := packageFound.ID
+		pkgCalling := packageFound.ID
 
 		for ix, file := range packageFound.Syntax {
 			if ix >= len(packageFound.GoFiles) { // checks the assumption that GoFiles match Syntax 1:1.
@@ -129,9 +129,14 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 						return true
 					}
 
-					calledPkg := fn.Pkg().Path()
+					pkgCandidate := fn.Pkg()
+					if pkgCandidate == nil {
+						return true
+					}
 
-					isOutsideModule := !strings.HasPrefix(calledPkg, a.modulePath)
+					pkgCalled := pkgCandidate.Path()
+
+					isOutsideModule := !strings.HasPrefix(pkgCalled, a.modulePath)
 					if isOutsideModule && !includeExternal {
 						return true
 					}
@@ -149,7 +154,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 						usages[key] = usage
 					}
 
-					usage.updateOccurences(callerPkg, calledPkg, isTest)
+					usage.updateOccurences(pkgCalling, pkgCalled, isTest)
 
 					return true
 				},
