@@ -1,17 +1,19 @@
 # Function Usage
 
 Function Usage is **not** a standalone CLI tool — it is a lightweight, composable static analysis library designed to map how functions are used across a Go repository and live inside tests.  
-It provides a clear, type‑checked view of call relationships, allowing one to understand usage patterns and identify structural issues in your codebase.  
-Function Usage is intentionally simple, deterministic, and transparent.
+It provides a clear, type-checked view of direct call relationships between declared functions, allowing one to understand usage patterns and identify structural issues in your codebase.  
+Function Usage is intentionally a simple, deterministic, and transparent structural analysis tool, not a behavioral one.
 It relies on Go’s type checker rather than heuristics or heavy call‑graph machinery, giving one predictable and actionable results.  
 
 It can help with below:
 
-a. find most used functions  
-b. find least used functions  
-c. find exported functions not used  
+a. find functions with the highest number of direct calls  
+b. find functions with the lowest number of direct calls  
+c. find exported functions not used by direct calls  
 d. find exported functions that could be unexported  
-e. have the posibility to include or exclude tests or external functions.  
+e. optionally include or exclude tests and external functions.  
+
+funcusage is not suitable for codebases where behavior is primarily expressed through interface dispatch, higher-order functions, or dynamic call construction. In such cases, direct call counts may significantly underrepresent actual runtime behavior.
 
 ## How to use
 
