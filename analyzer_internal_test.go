@@ -27,7 +27,7 @@ func TestAnalysis(t *testing.T) {
 	usage.
 		MethodOf("Analysis").
 		OrderByNameAsc().
-		PrintWith(*printer)
+		PrintWith(printer)
 }
 
 func TestUsageFilters(t *testing.T) {

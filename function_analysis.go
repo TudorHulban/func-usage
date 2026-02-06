@@ -78,7 +78,7 @@ func (fa *FunctionAnalysis) getPackage() (string, error) {
 
 type Analysis []FunctionAnalysis
 
-func (a Analysis) PrintWith(printer Printer) {
+func (a Analysis) PrintWith(printer *Printer) {
 	fmt.Println(
 		strings.Join(printer.columns, ", "),
 	)
