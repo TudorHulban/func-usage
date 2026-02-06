@@ -18,14 +18,14 @@ package funcusage
 //
 // Memory efficient: O(1) slice operation, no allocation.
 // Follows Go's slice semantics (like u[:n]).
-func (u Usage) Limit(n int) Usage {
+func (a Analysis) Limit(n int) Analysis {
 	if n <= 0 {
-		return Usage{}
+		return Analysis{}
 	}
 
-	if n >= len(u) {
-		return u
+	if n >= len(a) {
+		return a
 	}
 
-	return u[:n]
+	return a[:n]
 }

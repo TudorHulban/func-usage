@@ -3,11 +3,18 @@ package funcusage
 import (
 	"fmt"
 	"go/token"
+	"strconv"
 	"strings"
 )
 
-// FunctionUsage describes how a single function or method is used across the module.
-type FunctionUsage struct {
+const (
+	_LabelName     = "Name"
+	_LabelMethodOf = "Method of"
+	_LabelTotal    = "Total"
+)
+
+// FunctionAnalysis describes how a single function or method is used across the module.
+type FunctionAnalysis struct {
 	// Key is the canonical identity of the function or method.
 	// Example (function): "github.com/me/project/pkg.DoThing"
 	// Example (method):   "github.com/me/project/pkg.(*User).Save"
@@ -15,6 +22,10 @@ type FunctionUsage struct {
 
 	// Name is the short name of the function or method (without package or receiver).
 	Name string
+
+	// MethodOf highlights the object name for which the method belongs to.
+	// Alias for Object, but only populated for methods.
+	MethodOf string
 
 	// Position is the source position of the function declaration.
 	Position token.Position
@@ -34,35 +45,79 @@ type FunctionUsage struct {
 	ExternalTestsCount int
 }
 
-func (u *FunctionUsage) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
+func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
 	if strings.SplitN(callerPkg, " ", 2)[0] == calledPkg {
 		if callerIsTest {
-			u.InternalTestsCount++
+			fa.InternalTestsCount++
 		} else {
-			u.InternalCount++
+			fa.InternalCount++
 		}
 
 		return
 	}
 
 	if callerIsTest {
-		u.ExternalTestsCount++
+		fa.ExternalTestsCount++
 	} else {
-		u.ExternalCount++
+		fa.ExternalCount++
 	}
 }
 
-type Usage []FunctionUsage
+func (fa *FunctionAnalysis) getPackage() (string, error) {
+	dotIndex := strings.Index(fa.Key, ".")
+	if dotIndex == -1 {
+		return "",
+			fmt.Errorf(
+				"invalid function key: no package found in %q",
+				fa.Key,
+			)
+	}
 
-func (u Usage) String() string {
-	lines := make([]string, 0, 1+len(u))
+	return fa.Key[:dotIndex], nil
+}
+
+type Analysis []FunctionAnalysis
+
+func (a Analysis) PrintWith(printer Printer) {
+	fmt.Println(
+		strings.Join(printer.columns, ", "),
+	)
+
+	for _, fa := range a {
+		var row []string
+
+		for _, col := range printer.columns {
+			switch col {
+			case _LabelName:
+				row = append(row, fa.Name)
+
+			case "Key":
+				row = append(row, fa.Key)
+
+			case _LabelMethodOf:
+				row = append(row, fa.MethodOf)
+
+			case _LabelTotal:
+				row = append(
+					row,
+					strconv.Itoa(fa.InternalCount+fa.InternalTestsCount+fa.ExternalCount+fa.ExternalTestsCount),
+				)
+			}
+		}
+
+		fmt.Println(strings.Join(row, ", "))
+	}
+}
+
+func (a Analysis) String() string {
+	lines := make([]string, 0, 1+len(a))
 
 	lines = append(
 		lines,
 		"Name,Key,Location,Internal,InternalTests,External,ExternalTests,Total",
 	)
 
-	for _, fu := range u {
+	for _, fu := range a {
 		total := fu.InternalCount +
 			fu.InternalTestsCount +
 			fu.ExternalCount +

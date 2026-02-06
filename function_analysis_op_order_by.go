@@ -2,9 +2,9 @@ package funcusage
 
 import "sort"
 
-func (u Usage) OrderByTotalCallsDesc() Usage {
-	result := make(Usage, len(u))
-	copy(result, u)
+func (a Analysis) OrderByTotalCallsDesc() Analysis {
+	result := make(Analysis, len(a))
+	copy(result, a)
 
 	sort.Slice(
 		result, func(i, j int) bool {
@@ -18,9 +18,9 @@ func (u Usage) OrderByTotalCallsDesc() Usage {
 	return result
 }
 
-func (u Usage) OrderByTotalCallsAsc() Usage {
-	result := make(Usage, len(u))
-	copy(result, u)
+func (a Analysis) OrderByTotalCallsAsc() Analysis {
+	result := make(Analysis, len(a))
+	copy(result, a)
 
 	sort.Slice(
 		result,
@@ -35,9 +35,9 @@ func (u Usage) OrderByTotalCallsAsc() Usage {
 	return result
 }
 
-func (u Usage) OrderByExternalCallsDesc() Usage {
-	result := make(Usage, len(u))
-	copy(result, u)
+func (a Analysis) OrderByExternalCallsDesc() Analysis {
+	result := make(Analysis, len(a))
+	copy(result, a)
 
 	sort.Slice(
 		result,
@@ -53,9 +53,9 @@ func (u Usage) OrderByExternalCallsDesc() Usage {
 	return result
 }
 
-func (u Usage) OrderByNameAsc() Usage {
-	result := make(Usage, len(u))
-	copy(result, u)
+func (a Analysis) OrderByNameAsc() Analysis {
+	result := make(Analysis, len(a))
+	copy(result, a)
 
 	sort.Slice(
 		result,
@@ -67,9 +67,9 @@ func (u Usage) OrderByNameAsc() Usage {
 	return result
 }
 
-func (u Usage) OrderByNameDesc() Usage {
-	result := make(Usage, len(u))
-	copy(result, u)
+func (a Analysis) OrderByNameDesc() Analysis {
+	result := make(Analysis, len(a))
+	copy(result, a)
 
 	sort.Slice(
 		result,

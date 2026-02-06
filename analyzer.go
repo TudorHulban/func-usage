@@ -43,7 +43,7 @@ func (a *Analyzer) loadPackages() ([]*packages.Package, error) {
 	return packages.Load(cfg, "./...")
 }
 
-func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, error) { //nolint:revive,cognitive-complexity
+func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, error) { //nolint:revive,cognitive-complexity
 	packagesLoaded, errLoad := a.loadPackages()
 	if errLoad != nil {
 		return nil,
@@ -57,7 +57,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 		return nil, errPackageLoad
 	}
 
-	usages := make(map[string]*FunctionUsage)
+	usages := make(map[string]*FunctionAnalysis)
 
 	for _, packageFound := range packagesLoaded {
 		pkgCalling := packageFound.ID
@@ -105,11 +105,16 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 
 						usage := usages[key]
 						if usage == nil {
-							usage = &FunctionUsage{
+							usage = &FunctionAnalysis{
 								Key:      key,
 								Name:     fnName,
 								Position: packageFound.Fset.Position(fn.Pos()),
 							}
+
+							usage.MethodOf = extractMethodOf(
+								fnDeclaration,
+								packageFound.TypesInfo,
+							)
 
 							usages[key] = usage
 						}
@@ -145,7 +150,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 
 					usage := usages[key]
 					if usage == nil {
-						usage = &FunctionUsage{
+						usage = &FunctionAnalysis{
 							Key:      key,
 							Name:     fn.Name(),
 							Position: packageFound.Fset.Position(fn.Pos()),
@@ -162,7 +167,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Usage, erro
 		}
 	}
 
-	result := make([]FunctionUsage, 0, len(usages))
+	result := make([]FunctionAnalysis, 0, len(usages))
 
 	for _, usage := range usages {
 		result = append(result, *usage)
