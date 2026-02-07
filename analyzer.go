@@ -111,10 +111,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 								Position: packageFound.Fset.Position(fn.Pos()),
 							}
 
-							usage.MethodOf = extractMethodOf(
-								fnDeclaration,
-								packageFound.TypesInfo,
-							)
+							usage.MethodOf = extractMethodOf(fn)
 
 							usages[key] = usage
 						}
@@ -155,6 +152,8 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 							Name:     fn.Name(),
 							Position: packageFound.Fset.Position(fn.Pos()),
 						}
+
+						usage.MethodOf = extractMethodOf(fn)
 
 						usages[key] = usage
 					}

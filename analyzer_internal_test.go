@@ -55,7 +55,9 @@ func TestLimit(t *testing.T) {
 	)
 
 	fmt.Println(
-		usage.IsMethod().WhereNameIs("Limit").String(),
+		usage.
+			IsMethod().
+			WhereNameIs("Limit").String(),
 	)
 }
 
