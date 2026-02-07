@@ -1,8 +1,9 @@
-module github.com/TudorHulban/func-usage
+module github.com/tudorhulban/func-usage
 
 go 1.24.4
 
 require (
+	github.com/TudorHulban/func-usage v0.0.1
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/tools v0.41.0
 )

@@ -41,7 +41,7 @@ func extractCallExpr(n ast.Node) *ast.CallExpr {
 	return call
 }
 
-func extractMethodOf(fnDecl *ast.FuncDecl, typeInfo *types.Info) string {
+func extractMethodOf(fnDecl *ast.FuncDecl, typeInfo *types.Info) NameObject {
 	if fnDecl.Recv == nil || len(fnDecl.Recv.List) == 0 {
 		return "" // Not a method
 	}
@@ -56,8 +56,8 @@ func extractMethodOf(fnDecl *ast.FuncDecl, typeInfo *types.Info) string {
 
 	// Remove package prefix: "*github.com/me/project/pkg.User" -> "*User"
 	if lastDot := strings.LastIndex(typeStr, "."); lastDot != -1 {
-		return typeStr[lastDot+1:]
+		return NameObject(typeStr[lastDot+1:])
 	}
 
-	return typeStr
+	return NameObject(typeStr)
 }
