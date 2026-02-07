@@ -35,7 +35,7 @@ func (a Analysis) MethodOf(objectName string) Analysis {
 	objectName = strings.TrimPrefix(objectName, "*")
 
 	for _, usage := range a {
-		if strings.TrimPrefix(usage.MethodOf, "*") == objectName {
+		if strings.TrimPrefix(string(usage.MethodOf), "*") == objectName {
 			result = append(result, usage)
 		}
 	}
@@ -47,7 +47,7 @@ func (a Analysis) MethodLike(substr string) Analysis {
 	result := make(Analysis, 0, len(a))
 
 	for _, usage := range a {
-		if strings.Contains(usage.MethodOf, substr) {
+		if strings.Contains(string(usage.MethodOf), substr) {
 			result = append(result, usage)
 		}
 	}
@@ -59,7 +59,7 @@ func (a Analysis) MethodOfPointerReceiver() Analysis {
 	result := make(Analysis, 0, len(a))
 
 	for _, usage := range a {
-		if strings.HasPrefix(usage.MethodOf, "*") {
+		if strings.HasPrefix(string(usage.MethodOf), "*") {
 			result = append(result, usage)
 		}
 	}
@@ -71,7 +71,7 @@ func (a Analysis) MethodOfValueReceiver() Analysis {
 	result := make(Analysis, 0, len(a))
 
 	for _, usage := range a {
-		if usage.MethodOf != "" && !strings.HasPrefix(usage.MethodOf, "*") {
+		if usage.MethodOf != "" && !strings.HasPrefix(string(usage.MethodOf), "*") {
 			result = append(result, usage)
 		}
 	}

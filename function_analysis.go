@@ -7,10 +7,9 @@ import (
 	"strings"
 )
 
-const (
-	_LabelName     = "Name"
-	_LabelMethodOf = "Method of"
-	_LabelTotal    = "Total"
+type (
+	NamePackage string
+	NameObject  string
 )
 
 // FunctionAnalysis describes how a single function or method is used across the module.
@@ -25,7 +24,7 @@ type FunctionAnalysis struct {
 
 	// MethodOf highlights the object name for which the method belongs to.
 	// Alias for Object, but only populated for methods.
-	MethodOf string
+	MethodOf NameObject
 
 	// Position is the source position of the function declaration.
 	Position token.Position
@@ -63,17 +62,29 @@ func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-func (fa *FunctionAnalysis) getPackage() (string, error) {
-	dotIndex := strings.Index(fa.Key, ".")
-	if dotIndex == -1 {
+func (fa *FunctionAnalysis) getPackage() (NamePackage, error) {
+	indexSlash := strings.LastIndex(fa.Key, "/")
+	if indexSlash == -1 {
 		return "",
 			fmt.Errorf(
-				"invalid function key: no package found in %q",
+				"invalid package path (missing /) in: %q",
 				fa.Key,
 			)
 	}
 
-	return fa.Key[:dotIndex], nil
+	indexDot := strings.Index(fa.Key[indexSlash+1:], ".")
+	if indexDot == -1 {
+		return "",
+			fmt.Errorf(
+				"invalid package path (missing . after /) in: %q",
+				fa.Key,
+			)
+	}
+
+	return NamePackage(
+			strings.ReplaceAll(fa.Key[indexSlash+1:indexSlash+1+indexDot], "-", ""),
+		),
+		nil
 }
 
 type Analysis []FunctionAnalysis
@@ -95,7 +106,7 @@ func (a Analysis) PrintWith(printer *Printer) {
 				row = append(row, fa.Key)
 
 			case _LabelMethodOf:
-				row = append(row, fa.MethodOf)
+				row = append(row, string(fa.MethodOf))
 
 			case _LabelTotal:
 				row = append(
@@ -114,27 +125,28 @@ func (a Analysis) String() string {
 
 	lines = append(
 		lines,
-		"Name,Key,Location,Internal,InternalTests,External,ExternalTests,Total",
+		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total",
 	)
 
-	for _, fu := range a {
-		total := fu.InternalCount +
-			fu.InternalTestsCount +
-			fu.ExternalCount +
-			fu.ExternalTestsCount
+	for _, fa := range a {
+		total := fa.InternalCount +
+			fa.InternalTestsCount +
+			fa.ExternalCount +
+			fa.ExternalTestsCount
 
 		lines = append(
 			lines,
 			fmt.Sprintf(
-				"%s,%s,%s,%d,%d,%d,%d,%d",
+				"%s,%s,%s,%s,%d,%d,%d,%d,%d",
 
-				fu.Name,
-				fu.Key,
-				fu.Position,
-				fu.InternalCount,
-				fu.InternalTestsCount,
-				fu.ExternalCount,
-				fu.ExternalTestsCount,
+				fa.Name,
+				fa.Key,
+				fa.MethodOf,
+				fa.Position,
+				fa.InternalCount,
+				fa.InternalTestsCount,
+				fa.ExternalCount,
+				fa.ExternalTestsCount,
 				total,
 			),
 		)

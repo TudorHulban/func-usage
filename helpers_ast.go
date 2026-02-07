@@ -41,23 +41,30 @@ func extractCallExpr(n ast.Node) *ast.CallExpr {
 	return call
 }
 
-func extractMethodOf(fnDecl *ast.FuncDecl, typeInfo *types.Info) string {
-	if fnDecl.Recv == nil || len(fnDecl.Recv.List) == 0 {
-		return "" // Not a method
-	}
-
-	receiver := fnDecl.Recv.List[0]
-	receiverType := typeInfo.TypeOf(receiver.Type)
-	if receiverType == nil {
+func extractMethodOf(fn *types.Func) NameObject {
+	signature, couldCast := fn.Type().(*types.Signature)
+	if !couldCast {
 		return ""
 	}
 
-	typeStr := receiverType.String()
-
-	// Remove package prefix: "*github.com/me/project/pkg.User" -> "*User"
-	if lastDot := strings.LastIndex(typeStr, "."); lastDot != -1 {
-		return typeStr[lastDot+1:]
+	receiver := signature.Recv()
+	if receiver == nil {
+		return "" // Not a method
 	}
 
-	return typeStr
+	receiverType := receiver.Type()
+
+	// Strip pointer if present
+	if ptr, couldCaast := receiverType.(*types.Pointer); couldCaast {
+		receiverType = ptr.Elem()
+	}
+
+	// Get the named type
+	if named, couldCast := receiverType.(*types.Named); couldCast {
+		return NameObject(
+			named.Obj().Name(),
+		)
+	}
+
+	return ""
 }

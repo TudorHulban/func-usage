@@ -3,8 +3,8 @@ package funcusage_test
 import (
 	"testing"
 
-	funcusage "github.com/TudorHulban/func-usage"
 	"github.com/stretchr/testify/require"
+	funcusage "github.com/tudorhulban/func-usage"
 )
 
 func TestExternalAnalyzer(t *testing.T) {
