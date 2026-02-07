@@ -46,18 +46,20 @@ func TestLimit(t *testing.T) {
 	require.NoError(t, errAnalyze)
 	require.NotZero(t, usage)
 
+	fnSought := "Limit"
+
 	assert.NotEmpty(t,
-		usage.IsMethod().WhereNameIs("Limit"),
+		usage.IsMethod().WhereNameIs(fnSought),
 	)
 
 	require.Empty(t,
-		usage.IsFunction().WhereNameIs("Limit"),
+		usage.IsFunction().WhereNameIs(fnSought),
 	)
 
 	fmt.Println(
 		usage.
 			IsMethod().
-			WhereNameIs("Limit").String(),
+			WhereNameIs(fnSought).String(),
 	)
 }
 

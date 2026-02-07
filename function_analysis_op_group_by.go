@@ -13,6 +13,7 @@ func (a AnalysisGroupedByPackage) PrintWith(printer *Printer) {
 	for pkgName := range a {
 		pkgNames = append(pkgNames, string(pkgName))
 	}
+
 	sort.Strings(pkgNames)
 
 	for _, name := range pkgNames {
@@ -60,6 +61,7 @@ func (a AnalysisGroupedByObject) PrintWith(printer *Printer) {
 
 		objectNames = append(objectNames, string(objectName))
 	}
+
 	sort.Strings(objectNames)
 
 	for _, name := range objectNames {
@@ -92,6 +94,7 @@ func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 	for pkg := range a {
 		packageNames = append(packageNames, string(pkg))
 	}
+
 	sort.Strings(packageNames)
 
 	for _, pkgName := range packageNames {
@@ -106,6 +109,7 @@ func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 		for obj := range objMap {
 			objectNames = append(objectNames, string(obj))
 		}
+
 		sort.Strings(objectNames)
 
 		for _, objName := range objectNames {
@@ -125,7 +129,7 @@ func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject 
 	result := make(map[NamePackage]map[NameObject]Analysis)
 
 	for _, fa := range a {
-		pkg, errPackage := fa.getPackage()
+		keyPackage, errPackage := fa.getPackage()
 		if errPackage != nil {
 			fmt.Println(
 				"GroupedByPackageAndObject:",
@@ -134,8 +138,6 @@ func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject 
 
 			continue
 		}
-
-		keyPackage := NamePackage(pkg)
 
 		keyObject := fa.MethodOf
 		if len(keyObject) == 0 {

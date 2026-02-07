@@ -42,7 +42,10 @@ func extractCallExpr(n ast.Node) *ast.CallExpr {
 }
 
 func extractMethodOf(fn *types.Func) NameObject {
-	signature := fn.Type().(*types.Signature)
+	signature, couldCast := fn.Type().(*types.Signature)
+	if !couldCast {
+		return ""
+	}
 
 	receiver := signature.Recv()
 	if receiver == nil {
