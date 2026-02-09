@@ -61,7 +61,7 @@ func TestExternalAnalyzer(t *testing.T) {
 			require.Len(t,
 				usage.
 					WhereTestedExternally().
-					WherePackageIs(funcusage.NamePackage(packageName)).
+					WherePackageIs(packageName).
 					WhereNameIs(fnName).
 					Limit(1),
 				1,

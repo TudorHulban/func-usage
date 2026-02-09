@@ -14,7 +14,7 @@ func (a Analysis) WhereNameIs(name string) Analysis {
 	return result
 }
 
-func (a Analysis) WherePackageIs(name NamePackage) Analysis {
+func (a Analysis) WherePackageIs(name string) Analysis {
 	result := make(Analysis, 0, len(a))
 
 	for _, usage := range a {
@@ -28,7 +28,7 @@ func (a Analysis) WherePackageIs(name NamePackage) Analysis {
 			continue
 		}
 
-		if packageName == name {
+		if packageName == namePackage(name) {
 			result = append(result, usage)
 		}
 	}
