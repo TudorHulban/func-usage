@@ -41,7 +41,7 @@ func extractCallExpr(n ast.Node) *ast.CallExpr {
 	return call
 }
 
-func extractMethodOf(fn *types.Func) NameObject {
+func extractMethodOf(fn *types.Func) nameObject {
 	signature, couldCast := fn.Type().(*types.Signature)
 	if !couldCast {
 		return ""
@@ -61,7 +61,7 @@ func extractMethodOf(fn *types.Func) NameObject {
 
 	// Get the named type
 	if named, couldCast := receiverType.(*types.Named); couldCast {
-		return NameObject(
+		return nameObject(
 			named.Obj().Name(),
 		)
 	}

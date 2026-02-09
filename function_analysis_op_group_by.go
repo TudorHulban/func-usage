@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-type AnalysisGroupedByPackage map[NamePackage]Analysis
+type AnalysisGroupedByPackage map[namePackage]Analysis
 
 func (a AnalysisGroupedByPackage) PrintWith(printer *Printer) {
 	pkgNames := make([]string, 0, len(a))
@@ -20,17 +20,17 @@ func (a AnalysisGroupedByPackage) PrintWith(printer *Printer) {
 		fmt.Printf(
 			"\n=== Package: %s (%d functions) ===\n",
 			name,
-			len(a[NamePackage(name)]),
+			len(a[namePackage(name)]),
 		)
 
-		packageFunctions := a[NamePackage(name)].OrderByNameAsc()
+		packageFunctions := a[namePackage(name)].OrderByNameAsc()
 
 		packageFunctions.PrintWith(printer)
 	}
 }
 
 func (a Analysis) GroupedByPackage() AnalysisGroupedByPackage {
-	result := make(map[NamePackage]Analysis)
+	result := make(map[namePackage]Analysis)
 
 	for _, fa := range a {
 		pkg, errPackage := fa.getPackage()
@@ -49,7 +49,7 @@ func (a Analysis) GroupedByPackage() AnalysisGroupedByPackage {
 	return result
 }
 
-type AnalysisGroupedByObject map[NameObject]Analysis
+type AnalysisGroupedByObject map[nameObject]Analysis
 
 func (a AnalysisGroupedByObject) PrintWith(printer *Printer) {
 	objectNames := make([]string, 0, len(a))
@@ -68,17 +68,17 @@ func (a AnalysisGroupedByObject) PrintWith(printer *Printer) {
 		fmt.Printf(
 			"\n=== Object: %s (%d functions) ===\n",
 			name,
-			len(a[NameObject(name)]),
+			len(a[nameObject(name)]),
 		)
 
-		packageFunctions := a[NameObject(name)].OrderByNameAsc()
+		packageFunctions := a[nameObject(name)].OrderByNameAsc()
 
 		packageFunctions.PrintWith(printer)
 	}
 }
 
 func (a Analysis) GroupedByObject() AnalysisGroupedByObject {
-	result := make(map[NameObject]Analysis)
+	result := make(map[nameObject]Analysis)
 
 	for _, fa := range a {
 		result[fa.MethodOf] = append(result[fa.MethodOf], fa)
@@ -87,7 +87,7 @@ func (a Analysis) GroupedByObject() AnalysisGroupedByObject {
 	return result
 }
 
-type AnalysisGroupedByPackageAndObject map[NamePackage]map[NameObject]Analysis
+type AnalysisGroupedByPackageAndObject map[namePackage]map[nameObject]Analysis
 
 func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 	packageNames := make([]string, 0, len(a))
@@ -103,7 +103,7 @@ func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 			pkgName,
 		)
 
-		objMap := a[NamePackage(pkgName)]
+		objMap := a[namePackage(pkgName)]
 		objectNames := make([]string, 0, len(objMap))
 
 		for obj := range objMap {
@@ -117,16 +117,16 @@ func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 				"\n(object) %s (%d):\n",
 
 				objName,
-				len(objMap[NameObject(objName)]),
+				len(objMap[nameObject(objName)]),
 			)
 
-			objMap[NameObject(objName)].PrintWith(printer)
+			objMap[nameObject(objName)].PrintWith(printer)
 		}
 	}
 }
 
 func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject {
-	result := make(map[NamePackage]map[NameObject]Analysis)
+	result := make(map[namePackage]map[nameObject]Analysis)
 
 	for _, fa := range a {
 		keyPackage, errPackage := fa.getPackage()
@@ -146,7 +146,7 @@ func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject 
 
 		// Initialize package map if needed
 		if result[keyPackage] == nil {
-			result[keyPackage] = make(map[NameObject]Analysis)
+			result[keyPackage] = make(map[nameObject]Analysis)
 		}
 
 		// Append to object group

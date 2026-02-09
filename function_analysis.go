@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	NamePackage string
-	NameObject  string
+	namePackage string
+	nameObject  string
 )
 
 // FunctionAnalysis describes how a single function or method is used across the module.
@@ -24,7 +24,7 @@ type FunctionAnalysis struct {
 
 	// MethodOf highlights the object name for which the method belongs to.
 	// Alias for Object, but only populated for methods.
-	MethodOf NameObject
+	MethodOf nameObject
 
 	// Position is the source position of the function declaration.
 	Position token.Position
@@ -62,7 +62,7 @@ func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-func (fa *FunctionAnalysis) getPackage() (NamePackage, error) {
+func (fa *FunctionAnalysis) getPackage() (namePackage, error) {
 	indexSlash := strings.LastIndex(fa.Key, "/")
 	if indexSlash == -1 {
 		return "",
@@ -81,7 +81,7 @@ func (fa *FunctionAnalysis) getPackage() (NamePackage, error) {
 			)
 	}
 
-	return NamePackage(
+	return namePackage(
 			strings.ReplaceAll(fa.Key[indexSlash+1:indexSlash+1+indexDot], "-", ""),
 		),
 		nil

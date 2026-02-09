@@ -1,0 +1,45 @@
+name: Tag Merged PRs
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  tag-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Create and push tag
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Clean up tag name (remove special characters, limit length)
+          TAG_NAME=$(echo "$PR_TITLE" | \
+            tr '[:upper:]' '[:lower:]' | \
+            tr -cd '[:alnum:] -' | \
+            tr ' ' '-' | \
+            tr -s '-' | \
+            sed 's/^-//;s/-$//' | \
+            cut -c1-50)
+          
+          # Add PR number prefix for uniqueness
+          FINAL_TAG="pr-$PR_NUMBER-${TAG_NAME}"
+          
+          echo "Creating tag: $FINAL_TAG"
+          git tag "$FINAL_TAG"
+          git push origin "$FINAL_TAG"

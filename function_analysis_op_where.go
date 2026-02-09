@@ -1,10 +1,34 @@
 package funcusage
 
+import "fmt"
+
 func (a Analysis) WhereNameIs(name string) Analysis {
 	result := make(Analysis, 0, len(a))
 
 	for _, usage := range a {
 		if usage.Name == name {
+			result = append(result, usage)
+		}
+	}
+
+	return result
+}
+
+func (a Analysis) WherePackageIs(name string) Analysis {
+	result := make(Analysis, 0, len(a))
+
+	for _, usage := range a {
+		packageName, errPackage := usage.getPackage()
+		if errPackage != nil {
+			fmt.Println(
+				"WherePackageIs:",
+				errPackage,
+			)
+
+			continue
+		}
+
+		if packageName == namePackage(name) {
 			result = append(result, usage)
 		}
 	}

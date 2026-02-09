@@ -20,6 +20,7 @@ func TestExternalAnalyzer(t *testing.T) {
 	require.NotZero(t, usage)
 
 	fnName := "Analyze"
+	packageName := "funcusage"
 
 	t.Run(
 		"1. WhereNameIs finds Analyze",
@@ -47,6 +48,20 @@ func TestExternalAnalyzer(t *testing.T) {
 			require.Len(t,
 				usage.
 					WhereTestedExternally().
+					WhereNameIs(fnName).
+					Limit(1),
+				1,
+			)
+		},
+	)
+
+	t.Run(
+		"4. WherePackageIs",
+		func(t *testing.T) {
+			require.Len(t,
+				usage.
+					WhereTestedExternally().
+					WherePackageIs(packageName).
 					WhereNameIs(fnName).
 					Limit(1),
 				1,
