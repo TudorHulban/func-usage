@@ -1,23 +1,63 @@
-name: Test Tag Creation
+name: Tag Creation
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
-      - devops-create-tag
-  workflow_dispatch:
+      - main
 
 jobs:
   create-tag:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Prepare tag creation
+      - name: Detect docs-only PR
+        id: docscheck
         env:
-          COMMIT_SHA: ${{ github.sha }}
-          PR_NUMBER: 999
-          PR_TITLE: "Test PR for tag creation"
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking changed files for PR #$PR_NUMBER"
+
+          # Fetch changed files
+          FILES=$(curl -s \
+            -H "Authorization: token $TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files" \
+            | jq -r '.[].filename')
+
+          echo "Changed files:"
+          echo "$FILES"
+
+          DOCS_ONLY=true
+
+          for f in $FILES; do
+            case "$f" in
+              *.md)
+                # allowed docs-only patterns
+                ;;
+              *)
+                DOCS_ONLY=false
+                ;;
+            esac
+          done
+
+          echo "docs_only=$DOCS_ONLY" >> $GITHUB_OUTPUT
+
+      - name: Skip tag creation for docs-only PRs
+        if: steps.docscheck.outputs.docs_only == 'true'
+        run: |
+          echo "Docs-only PR detected. Skipping tag creation."
+
+      - name: Prepare tag creation
+        if: steps.docscheck.outputs.docs_only != 'true'
+        env:
+          COMMIT_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           echo "Commit SHA: $COMMIT_SHA"
           echo "PR number: $PR_NUMBER"
