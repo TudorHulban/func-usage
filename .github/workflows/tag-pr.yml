@@ -3,7 +3,7 @@ name: Test Tag Creation
 on:
   push:
     branches:
-      - test/tag-testing
+      - devops-create-tag
   workflow_dispatch:
 
 jobs:
