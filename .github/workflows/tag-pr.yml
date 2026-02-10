@@ -2,7 +2,9 @@ name: Test Tag Creation
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - devops-create-tag
 
 jobs:
   test-tag:
