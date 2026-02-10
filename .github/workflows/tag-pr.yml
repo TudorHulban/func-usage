@@ -16,7 +16,7 @@ jobs:
       - name: Prepare tag creation
         env:
           COMMIT_SHA: ${{ github.sha }}
-          PR_NUMBER: 999
+          PR_NUMBER: 998
           PR_TITLE: "Test PR for tag creation"
         run: |
           echo "Commit SHA: $COMMIT_SHA"
