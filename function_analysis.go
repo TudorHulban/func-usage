@@ -103,7 +103,7 @@ func (a Analysis) String() string {
 
 	lines = append(
 		lines,
-		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total",
+		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total,TypesParams,TypesResults",
 	)
 
 	for _, fa := range a {
@@ -115,7 +115,7 @@ func (a Analysis) String() string {
 		lines = append(
 			lines,
 			fmt.Sprintf(
-				"%s,%s,%s,%s,%d,%d,%d,%d,%d",
+				"%s,%s,%s,%s,%d,%d,%d,%d,%d,%q,%q",
 
 				fa.Name,
 				fa.Key,
@@ -126,6 +126,8 @@ func (a Analysis) String() string {
 				fa.ExternalCount,
 				fa.ExternalTestsCount,
 				total,
+				fa.TypesParams,
+				fa.TypesResults,
 			),
 		)
 	}

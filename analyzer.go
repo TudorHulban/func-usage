@@ -112,6 +112,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 							}
 
 							usage.MethodOf = extractMethodOf(fn)
+							usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 							usages[key] = usage
 						}
@@ -154,6 +155,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 						}
 
 						usage.MethodOf = extractMethodOf(fn)
+						usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 						usages[key] = usage
 					}

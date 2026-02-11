@@ -68,3 +68,38 @@ func extractMethodOf(fn *types.Func) nameObject {
 
 	return ""
 }
+
+func extractSignatureTypes(fn *types.Func) ([]string, []string) {
+	signature, couldCast := fn.Type().(*types.Signature)
+	if !couldCast {
+		return nil, nil
+	}
+
+	qualifier := func(pkg *types.Package) string {
+		if pkg == nil {
+			return ""
+		}
+
+		return pkg.Path()
+	}
+
+	params := make([]string, 0, signature.Params().Len())
+
+	for param := range signature.Params().Variables() {
+		params = append(
+			params,
+			types.TypeString(param.Type(), qualifier),
+		)
+	}
+
+	results := make([]string, 0, signature.Results().Len())
+
+	for result := range signature.Results().Variables() {
+		results = append(
+			results,
+			types.TypeString(result.Type(), qualifier),
+		)
+	}
+
+	return params, results
+}
