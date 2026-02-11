@@ -62,31 +62,6 @@ func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-func (fa *FunctionAnalysis) getPackage() (namePackage, error) {
-	indexSlash := strings.LastIndex(fa.Key, "/")
-	if indexSlash == -1 {
-		return "",
-			fmt.Errorf(
-				"invalid package path (missing /) in: %q",
-				fa.Key,
-			)
-	}
-
-	indexDot := strings.Index(fa.Key[indexSlash+1:], ".")
-	if indexDot == -1 {
-		return "",
-			fmt.Errorf(
-				"invalid package path (missing . after /) in: %q",
-				fa.Key,
-			)
-	}
-
-	return namePackage(
-			strings.ReplaceAll(fa.Key[indexSlash+1:indexSlash+1+indexDot], "-", ""),
-		),
-		nil
-}
-
 type Analysis []FunctionAnalysis
 
 func (a Analysis) PrintWith(printer *Printer) {
