@@ -198,7 +198,11 @@ func TestSignatureGrouping(t *testing.T) {
 		usage.IsMethod(),
 	)
 
-	printer := NewPrinter().WithName().WithMethodOf()
+	printer := NewPrinter().
+		WithName().
+		WithMethodOf().
+		WithTypesParams().
+		WithTypesResults()
 
 	usage.
 		GroupedByParamSignature().

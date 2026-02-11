@@ -5,5 +5,7 @@ const (
 	_LabelMethodOf = "Method of"
 	_LabelTotal    = "Total"
 
-	_LabelFunction = "<standalone function(s)>"
+	_LabelFunction     = "<standalone function(s)>"
+	_LabelTypesParams  = "TypesParams"
+	_LabelTypesResults = "TypesResults"
 )

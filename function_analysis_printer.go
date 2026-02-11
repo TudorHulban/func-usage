@@ -6,7 +6,7 @@ type Printer struct {
 
 func NewPrinter() *Printer {
 	return &Printer{
-		columns: make([]string, 0, 7),
+		columns: make([]string, 0, 9),
 	}
 }
 
@@ -24,6 +24,18 @@ func (p *Printer) WithMethodOf() *Printer {
 
 func (p *Printer) WithTotal() *Printer {
 	p.columns = append(p.columns, _LabelTotal)
+
+	return p
+}
+
+func (p *Printer) WithTypesParams() *Printer {
+	p.columns = append(p.columns, _LabelTypesParams)
+
+	return p
+}
+
+func (p *Printer) WithTypesResults() *Printer {
+	p.columns = append(p.columns, _LabelTypesResults)
 
 	return p
 }

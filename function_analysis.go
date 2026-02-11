@@ -91,7 +91,20 @@ func (a Analysis) PrintWith(printer *Printer) {
 					row,
 					strconv.Itoa(fa.InternalCount+fa.InternalTestsCount+fa.ExternalCount+fa.ExternalTestsCount),
 				)
+
+			case _LabelTypesParams:
+				row = append(
+					row,
+					"\"<"+strings.Join(fa.TypesParams, ",")+">\"",
+				)
+
+			case _LabelTypesResults:
+				row = append(
+					row,
+					"\"<"+strings.Join(fa.TypesResults, ", ")+">\"",
+				)
 			}
+
 		}
 
 		fmt.Println(strings.Join(row, ", "))
