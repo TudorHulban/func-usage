@@ -104,7 +104,6 @@ func (a Analysis) PrintWith(printer *Printer) {
 					"\"<"+strings.Join(fa.TypesResults, ", ")+">\"",
 				)
 			}
-
 		}
 
 		fmt.Println(strings.Join(row, ", "))

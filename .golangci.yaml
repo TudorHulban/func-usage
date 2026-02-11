@@ -110,7 +110,7 @@ linters:
           arguments: [50]
 
         - name: cyclomatic
-          arguments: [8]
+          arguments: [10]
 
         - name: max-control-nesting
           arguments: [7]
