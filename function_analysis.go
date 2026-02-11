@@ -26,6 +26,9 @@ type FunctionAnalysis struct {
 	// Alias for Object, but only populated for methods.
 	MethodOf nameObject
 
+	TypesParams  []string
+	TypesResults []string
+
 	// Position is the source position of the function declaration.
 	Position token.Position
 
@@ -88,6 +91,18 @@ func (a Analysis) PrintWith(printer *Printer) {
 					row,
 					strconv.Itoa(fa.InternalCount+fa.InternalTestsCount+fa.ExternalCount+fa.ExternalTestsCount),
 				)
+
+			case _LabelTypesParams:
+				row = append(
+					row,
+					"\"<"+strings.Join(fa.TypesParams, ",")+">\"",
+				)
+
+			case _LabelTypesResults:
+				row = append(
+					row,
+					"\"<"+strings.Join(fa.TypesResults, ", ")+">\"",
+				)
 			}
 		}
 
@@ -100,7 +115,7 @@ func (a Analysis) String() string {
 
 	lines = append(
 		lines,
-		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total",
+		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total,TypesParams,TypesResults",
 	)
 
 	for _, fa := range a {
@@ -112,7 +127,7 @@ func (a Analysis) String() string {
 		lines = append(
 			lines,
 			fmt.Sprintf(
-				"%s,%s,%s,%s,%d,%d,%d,%d,%d",
+				"%s,%s,%s,%s,%d,%d,%d,%d,%d,%q,%q",
 
 				fa.Name,
 				fa.Key,
@@ -123,6 +138,8 @@ func (a Analysis) String() string {
 				fa.ExternalCount,
 				fa.ExternalTestsCount,
 				total,
+				fa.TypesParams,
+				fa.TypesResults,
 			),
 		)
 	}

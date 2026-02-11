@@ -90,7 +90,11 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 						fnName := fn.Name()
 
-						if fnName == "main" || fnName == "init" || strings.HasPrefix(fnName, "Test") {
+						if fnName == "main" ||
+							fnName == "init" ||
+							strings.HasPrefix(fnName, "Test") ||
+							strings.HasPrefix(fnName, "Benchmark") ||
+							strings.HasPrefix(fnName, "Fuzz") {
 							return true
 						}
 
@@ -112,6 +116,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 							}
 
 							usage.MethodOf = extractMethodOf(fn)
+							usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 							usages[key] = usage
 						}
@@ -154,6 +159,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 						}
 
 						usage.MethodOf = extractMethodOf(fn)
+						usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 						usages[key] = usage
 					}
