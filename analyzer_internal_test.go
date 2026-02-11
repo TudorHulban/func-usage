@@ -181,3 +181,26 @@ func TestUsageFilters(t *testing.T) {
 		},
 	)
 }
+
+func TestSignatureGrouping(t *testing.T) {
+	a, errCr := NewAnalyzer(".")
+	require.NoError(t, errCr)
+	require.NotNil(t, a)
+
+	usage, errAnalyze := a.Analyze(
+		ModeIncludeTestsForCoverage,
+		false,
+	)
+	require.NoError(t, errAnalyze)
+	require.NotZero(t, usage)
+
+	require.NotEmpty(t,
+		usage.IsMethod(),
+	)
+
+	printer := NewPrinter().WithName().WithMethodOf()
+
+	usage.
+		GroupedByParamSignature().
+		PrintWith(printer)
+}

@@ -3,6 +3,7 @@ package funcusage
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 type AnalysisGroupedByPackage map[namePackage]Analysis
@@ -154,6 +155,62 @@ func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject 
 			result[keyPackage][keyObject],
 			fa,
 		)
+	}
+
+	return result
+}
+
+type AnalysisGroupedBySignature map[string]Analysis
+
+func (a AnalysisGroupedBySignature) PrintWith(printer *Printer) {
+	signatures := make([]string, 0, len(a))
+
+	for signature := range a {
+		if len(signature) == 0 {
+			continue
+		}
+
+		signatures = append(signatures, signature)
+	}
+
+	sort.Strings(signatures)
+
+	for _, signature := range signatures {
+		fmt.Printf(
+			"\n=== Signature: %s (%d functions) ===\n",
+			signature,
+			len(a[signature]),
+		)
+
+		group := a[signature].OrderByNameAsc()
+
+		group.PrintWith(printer)
+	}
+}
+
+func (a Analysis) GroupedByParamSignature() AnalysisGroupedBySignature {
+	result := make(AnalysisGroupedBySignature, len(a))
+
+	for _, usage := range a {
+		key := strings.Join(usage.TypesParams, ",")
+
+		group := result[key]
+		group = append(group, usage)
+		result[key] = group
+	}
+
+	return result
+}
+
+func (a Analysis) GroupedByResultSignature() AnalysisGroupedBySignature {
+	result := make(AnalysisGroupedBySignature, len(a))
+
+	for _, usage := range a {
+		key := strings.Join(usage.TypesResults, ",")
+
+		group := result[key]
+		group = append(group, usage)
+		result[key] = group
 	}
 
 	return result
