@@ -26,6 +26,9 @@ type FunctionAnalysis struct {
 	// Alias for Object, but only populated for methods.
 	MethodOf nameObject
 
+	TypesParams  []string
+	TypesResults []string
+
 	// Position is the source position of the function declaration.
 	Position token.Position
 

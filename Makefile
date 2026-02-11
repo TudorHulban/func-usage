@@ -29,3 +29,8 @@ lint: deps
 	@${repo_linting}/golangci-lint config verify
 	@${repo_linting}/golangci-lint run --config ${PWD}/.golangci.yaml
 
+test:
+    @echo -e "$(info_color)==> $@ $(no_color)"
+    @go test ./... -race -count=1 -v
+
+
