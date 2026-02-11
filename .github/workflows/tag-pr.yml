@@ -68,7 +68,7 @@ jobs:
           # Fetch all tags, strip suffixes like _#123, and find highest base vX.Y.Z
           LATEST_TAG=$(git ls-remote --tags --sort='v:refname' "https://github.com/${{ github.repository }}" \
             | awk -F/ '{print $3}' \
-            | sed 's/_#.*$//' \
+            | sed 's/+PR.*$//' \
             | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
             | sort -V \
             | tail -n1)
@@ -87,7 +87,7 @@ jobs:
 
           # Increment patch
           NEW_PATCH=$((PATCH + 1))
-          NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}_#${PR_NUMBER}"
+          NEW_TAG="v${MAJOR}.${MINOR}.${NEW_PATCH}+PR${PR_NUMBER}"
 
           echo "New tag: $NEW_TAG"
 
