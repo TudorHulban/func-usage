@@ -12,6 +12,9 @@ import (
 type Analyzer struct {
 	root       string
 	modulePath string
+
+	DefinedTypes  []string
+	ExportedTypes []string
 }
 
 func NewAnalyzer(atRoot string) (*Analyzer, error) {
@@ -57,7 +60,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 		return nil, errPackageLoad
 	}
 
-	usages := make(map[string]*FunctionAnalysis)
+	usages := make(map[string]*AnalysisFunction)
 
 	for _, packageFound := range packagesLoaded {
 		pkgCalling := packageFound.ID
@@ -109,7 +112,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 						usage := usages[key]
 						if usage == nil {
-							usage = &FunctionAnalysis{
+							usage = &AnalysisFunction{
 								Key:      key,
 								Name:     fnName,
 								Position: packageFound.Fset.Position(fn.Pos()),
@@ -152,7 +155,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 					usage := usages[key]
 					if usage == nil {
-						usage = &FunctionAnalysis{
+						usage = &AnalysisFunction{
 							Key:      key,
 							Name:     fn.Name(),
 							Position: packageFound.Fset.Position(fn.Pos()),
@@ -172,7 +175,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 		}
 	}
 
-	result := make([]FunctionAnalysis, 0, len(usages))
+	result := make([]AnalysisFunction, 0, len(usages))
 
 	for _, usage := range usages {
 		result = append(result, *usage)

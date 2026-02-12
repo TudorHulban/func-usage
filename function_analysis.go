@@ -12,8 +12,8 @@ type (
 	nameObject  string
 )
 
-// FunctionAnalysis describes how a single function or method is used across the module.
-type FunctionAnalysis struct {
+// AnalysisFunction describes how a single function or method is used across the module.
+type AnalysisFunction struct {
 	// Key is the canonical identity of the function or method.
 	// Example (function): "github.com/me/project/pkg.DoThing"
 	// Example (method):   "github.com/me/project/pkg.(*User).Save"
@@ -47,7 +47,7 @@ type FunctionAnalysis struct {
 	ExternalTestsCount int
 }
 
-func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
+func (fa *AnalysisFunction) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
 	if strings.SplitN(callerPkg, " ", 2)[0] == calledPkg {
 		if callerIsTest {
 			fa.InternalTestsCount++
@@ -65,7 +65,7 @@ func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-type Analysis []FunctionAnalysis
+type Analysis []AnalysisFunction
 
 func (a Analysis) PrintWith(printer *Printer) {
 	fmt.Println(

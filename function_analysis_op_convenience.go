@@ -11,7 +11,7 @@ func (a Analysis) LeastUsed(n int) Analysis {
 }
 
 func (a Analysis) ExportedWithNoExternalCalls() Analysis {
-	return a.WhereExported().Where(func(fn FunctionAnalysis) bool {
+	return a.WhereExported().Where(func(fn AnalysisFunction) bool {
 		return fn.ExternalCount == 0 && fn.InternalCount > 0
 	})
 }

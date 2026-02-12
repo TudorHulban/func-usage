@@ -1,6 +1,6 @@
 package funcusage
 
-func (a Analysis) Where(predicate func(FunctionAnalysis) bool) Analysis {
+func (a Analysis) Where(predicate func(AnalysisFunction) bool) Analysis {
 	result := make(Analysis, 0, len(a))
 
 	for _, usage := range a {

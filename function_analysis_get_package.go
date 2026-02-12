@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func (fa *FunctionAnalysis) getPackage() (namePackage, error) {
+func (fa *AnalysisFunction) getPackage() (namePackage, error) {
 	// Case 1: filesystem-style path
 	indexSlash := strings.LastIndex(fa.Key, "/")
 	if indexSlash != -1 {
