@@ -17,5 +17,5 @@ func (level LevelFunction) ExportedWithNoExternalCalls() LevelFunction {
 }
 
 func (level LevelFunction) ExportedUnused() LevelFunction {
-	return level.WhereExported().WhereUnused()
+	return level.WhereExported().WhereNotUsed()
 }

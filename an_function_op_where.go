@@ -38,7 +38,7 @@ func (level LevelFunction) WherePackageIs(name string) LevelFunction {
 	return result
 }
 
-func (level LevelFunction) WhereUnused() LevelFunction {
+func (level LevelFunction) WhereNotUsed() LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
 	for _, usage := range level {

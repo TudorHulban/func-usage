@@ -11,7 +11,7 @@ import (
 
 type Analyzer struct {
 	root       string
-	modulePath string
+	ModulePath string
 
 	DefinedTypes  []string
 	ExportedTypes []string
@@ -26,7 +26,7 @@ func NewAnalyzer(atRoot string) (*Analyzer, error) {
 
 	return &Analyzer{
 			root:       atRoot,
-			modulePath: modulePath,
+			ModulePath: modulePath,
 		},
 		nil
 }
@@ -64,20 +64,20 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 	packagesMap := make(map[string]*AnalysisPackage)
 
 	for _, packageFound := range packagesLoaded {
-		pkgCalling := packageFound.ID
+		packageFoundID := packageFound.ID
 
 		var pkgEntry *AnalysisPackage
 
-		if !isSyntheticTestPackage(pkgCalling) {
-			pkgEntry = packagesMap[pkgCalling]
+		if !isSyntheticTestPackage(packageFoundID) {
+			pkgEntry = packagesMap[packageFoundID]
 			if pkgEntry == nil {
 				pkgEntry = &AnalysisPackage{
-					Name:             pkgCalling,
+					Name:             packageFoundID,
 					Types:            make(map[string]inUse),
 					PackageFunctions: make(LevelFunction, 0, 32),
 				}
 
-				packagesMap[pkgCalling] = pkgEntry
+				packagesMap[packageFoundID] = pkgEntry
 			}
 		}
 
@@ -119,7 +119,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 
 						definingPkg := fn.Pkg().Path()
 
-						isOutsideModule := !strings.HasPrefix(definingPkg, a.modulePath)
+						isOutsideModule := !strings.HasPrefix(definingPkg, a.ModulePath)
 						if isOutsideModule && !includeExternal {
 							return true
 						}
@@ -176,7 +176,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 
 					pkgCalled := pkgCandidate.Path()
 
-					isOutsideModule := !strings.HasPrefix(pkgCalled, a.modulePath)
+					isOutsideModule := !strings.HasPrefix(pkgCalled, a.ModulePath)
 					if isOutsideModule && !includeExternal {
 						return true
 					}
@@ -196,22 +196,21 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 
 						usages[key] = usage
 
-						// attach function to package
-						if pkgEntry != nil {
-							pkgEntry.PackageFunctions = append(pkgEntry.PackageFunctions, *usage)
-
-							// register types in package
+						// mark types as used in package called
+						// attach function to package called
+						calledPkgEntry := packagesMap[pkgCalled]
+						if calledPkgEntry != nil {
 							for _, t := range usage.TypesParams {
-								pkgEntry.Types[t] = true
+								calledPkgEntry.Types[t] = true
 							}
 
 							for _, t := range usage.TypesResults {
-								pkgEntry.Types[t] = true
+								calledPkgEntry.Types[t] = true
 							}
 						}
 					}
 
-					usage.updateOccurences(pkgCalling, pkgCalled, isTest)
+					usage.updateOccurences(packageFoundID, pkgCalled, isTest)
 
 					return true
 				},

@@ -103,19 +103,3 @@ func extractSignatureTypes(fn *types.Func) ([]string, []string) {
 
 	return params, results
 }
-
-func isSyntheticTestPackage(id string) bool {
-	if strings.HasSuffix(id, ".test") {
-		return true
-	}
-
-	if strings.Contains(id, " [") { // e.g. "pkg [pkg.test]"
-		return true
-	}
-
-	if strings.HasSuffix(id, "_test") {
-		return true
-	}
-
-	return false
-}

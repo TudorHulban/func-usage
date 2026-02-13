@@ -42,3 +42,39 @@ func isExportedName(name string) bool {
 func isTestFile(filename string) bool {
 	return strings.HasSuffix(filename, "_test.go")
 }
+
+func isSyntheticTestPackage(id string) bool {
+	if strings.HasSuffix(id, ".test") {
+		return true
+	}
+
+	if strings.Contains(id, " [") { // e.g. "pkg [pkg.test]"
+		return true
+	}
+
+	if strings.HasSuffix(id, "_test") {
+		return true
+	}
+
+	return false
+}
+
+func isRelevantType(t string, modulePath string) bool {
+	// strip pointer
+	for strings.HasPrefix(t, "*") {
+		t = t[1:]
+	}
+
+	// strip slice
+	for strings.HasPrefix(t, "[]") {
+		t = t[2:]
+	}
+
+	// strip map key/value (very naive but good enough)
+	if strings.HasPrefix(t, "map[") {
+		return false
+	}
+
+	// keep only types from our module
+	return strings.HasPrefix(t, modulePath+".")
+}

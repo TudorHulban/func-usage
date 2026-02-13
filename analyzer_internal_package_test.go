@@ -22,6 +22,26 @@ func TestPackage(t *testing.T) {
 	require.NotEmpty(t, analysis.LevelPackage)
 
 	fmt.Println(
-		analysis.LevelPackage,
+		"number functions:",
+		len(analysis.LevelFunction.IsFunction()),
+	)
+
+	fmt.Println(
+		"number methods:",
+		len(analysis.LevelFunction.IsMethod()),
+	)
+
+	fmt.Println(
+		"number untested:",
+		len(analysis.LevelFunction.WhereNotTested()),
+	)
+
+	fmt.Println(
+		"number unused:",
+		len(analysis.LevelFunction.WhereNotUsed()),
+	)
+
+	fmt.Println(
+		analysis.LevelPackage.Statistics(a.ModulePath),
 	)
 }
