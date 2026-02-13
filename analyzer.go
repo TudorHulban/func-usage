@@ -195,19 +195,6 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 						usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 						usages[key] = usage
-
-						// mark types as used in package called
-						// attach function to package called
-						calledPkgEntry := packagesMap[pkgCalled]
-						if calledPkgEntry != nil {
-							for _, t := range usage.TypesParams {
-								calledPkgEntry.Types[t] = true
-							}
-
-							for _, t := range usage.TypesResults {
-								calledPkgEntry.Types[t] = true
-							}
-						}
 					}
 
 					usage.updateOccurences(packageFoundID, pkgCalled, isTest)

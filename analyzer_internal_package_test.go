@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPackage(t *testing.T) {
+func TestStatistics(t *testing.T) {
 	a, errCr := NewAnalyzer(".")
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
