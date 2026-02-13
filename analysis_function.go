@@ -67,12 +67,12 @@ func (fa *AnalysisFunction) updateOccurences(callerPkg, calledPkg string, caller
 
 type LevelFunction []AnalysisFunction
 
-func (a LevelFunction) PrintWith(printer *Printer) {
+func (level LevelFunction) PrintWith(printer *Printer) {
 	fmt.Println(
 		strings.Join(printer.columns, ", "),
 	)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		var row []string
 
 		for _, col := range printer.columns {
@@ -110,15 +110,15 @@ func (a LevelFunction) PrintWith(printer *Printer) {
 	}
 }
 
-func (a LevelFunction) String() string {
-	lines := make([]string, 0, 1+len(a))
+func (level LevelFunction) String() string {
+	lines := make([]string, 0, 1+len(level))
 
 	lines = append(
 		lines,
 		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total,TypesParams,TypesResults",
 	)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		total := fa.InternalCount +
 			fa.InternalTestsCount +
 			fa.ExternalCount +

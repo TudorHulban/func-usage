@@ -4,10 +4,10 @@ import (
 	"strings"
 )
 
-func (a LevelFunction) IsFunction() LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) IsFunction() LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if len(usage.MethodOf) == 0 {
 			result = append(result, usage)
 		}
@@ -16,10 +16,10 @@ func (a LevelFunction) IsFunction() LevelFunction {
 	return result
 }
 
-func (a LevelFunction) IsMethod() LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) IsMethod() LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if len(usage.MethodOf) > 0 {
 			result = append(result, usage)
 		}
@@ -28,13 +28,13 @@ func (a LevelFunction) IsMethod() LevelFunction {
 	return result
 }
 
-func (a LevelFunction) MethodOf(objectName string) LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) MethodOf(objectName string) LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
 	// Trim leading * for comparison
 	objectName = strings.TrimPrefix(objectName, "*")
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if strings.TrimPrefix(string(usage.MethodOf), "*") == objectName {
 			result = append(result, usage)
 		}
@@ -43,10 +43,10 @@ func (a LevelFunction) MethodOf(objectName string) LevelFunction {
 	return result
 }
 
-func (a LevelFunction) MethodLike(substr string) LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) MethodLike(substr string) LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if strings.Contains(string(usage.MethodOf), substr) {
 			result = append(result, usage)
 		}
@@ -55,10 +55,10 @@ func (a LevelFunction) MethodLike(substr string) LevelFunction {
 	return result
 }
 
-func (a LevelFunction) MethodOfPointerReceiver() LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) MethodOfPointerReceiver() LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if strings.HasPrefix(string(usage.MethodOf), "*") {
 			result = append(result, usage)
 		}
@@ -67,10 +67,10 @@ func (a LevelFunction) MethodOfPointerReceiver() LevelFunction {
 	return result
 }
 
-func (a LevelFunction) MethodOfValueReceiver() LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) MethodOfValueReceiver() LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if usage.MethodOf != "" && !strings.HasPrefix(string(usage.MethodOf), "*") {
 			result = append(result, usage)
 		}

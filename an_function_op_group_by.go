@@ -30,10 +30,10 @@ func (a AnalysisGroupedByPackage) PrintWith(printer *Printer) {
 	}
 }
 
-func (a LevelFunction) GroupedByPackage() AnalysisGroupedByPackage {
+func (level LevelFunction) GroupedByPackage() AnalysisGroupedByPackage {
 	result := make(map[namePackage]LevelFunction)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		pkg, errPackage := fa.getPackage()
 		if errPackage != nil {
 			fmt.Println(
@@ -78,10 +78,10 @@ func (a AnalysisGroupedByObject) PrintWith(printer *Printer) {
 	}
 }
 
-func (a LevelFunction) GroupedByObject() AnalysisGroupedByObject {
+func (level LevelFunction) GroupedByObject() AnalysisGroupedByObject {
 	result := make(map[nameObject]LevelFunction)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		result[fa.MethodOf] = append(result[fa.MethodOf], fa)
 	}
 
@@ -126,10 +126,10 @@ func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 	}
 }
 
-func (a LevelFunction) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject {
+func (level LevelFunction) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject {
 	result := make(map[namePackage]map[nameObject]LevelFunction)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		keyPackage, errPackage := fa.getPackage()
 		if errPackage != nil {
 			fmt.Println(
@@ -188,10 +188,10 @@ func (a AnalysisGroupedBySignature) PrintWith(printer *Printer) {
 	}
 }
 
-func (a LevelFunction) GroupedByParamSignature() AnalysisGroupedBySignature {
-	result := make(AnalysisGroupedBySignature, len(a))
+func (level LevelFunction) GroupedByParamSignature() AnalysisGroupedBySignature {
+	result := make(AnalysisGroupedBySignature, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		key := strings.Join(usage.TypesParams, ",")
 
 		group := result[key]
@@ -202,10 +202,10 @@ func (a LevelFunction) GroupedByParamSignature() AnalysisGroupedBySignature {
 	return result
 }
 
-func (a LevelFunction) GroupedByResultSignature() AnalysisGroupedBySignature {
-	result := make(AnalysisGroupedBySignature, len(a))
+func (level LevelFunction) GroupedByResultSignature() AnalysisGroupedBySignature {
+	result := make(AnalysisGroupedBySignature, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		key := strings.Join(usage.TypesResults, ",")
 
 		group := result[key]

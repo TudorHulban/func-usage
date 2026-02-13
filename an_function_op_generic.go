@@ -1,9 +1,9 @@
 package funcusage
 
-func (a LevelFunction) Where(predicate func(AnalysisFunction) bool) LevelFunction {
-	result := make(LevelFunction, 0, len(a))
+func (level LevelFunction) Where(predicate func(AnalysisFunction) bool) LevelFunction {
+	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range a {
+	for _, usage := range level {
 		if predicate(usage) {
 			result = append(result, usage)
 		}

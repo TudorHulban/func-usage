@@ -46,7 +46,7 @@ func (a *Analyzer) loadPackages() ([]*packages.Package, error) {
 	return packages.Load(cfg, "./...")
 }
 
-func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, error) { //nolint:revive,cognitive-complexity
+func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, error) { //nolint:gocyclo,revive,cognitive-complexity
 	packagesLoaded, errLoad := a.loadPackages()
 	if errLoad != nil {
 		return nil,
@@ -61,9 +61,25 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 	}
 
 	usages := make(map[string]*AnalysisFunction)
+	packagesMap := make(map[string]*AnalysisPackage)
 
 	for _, packageFound := range packagesLoaded {
 		pkgCalling := packageFound.ID
+
+		var pkgEntry *AnalysisPackage
+
+		if !isSyntheticTestPackage(pkgCalling) {
+			pkgEntry = packagesMap[pkgCalling]
+			if pkgEntry == nil {
+				pkgEntry = &AnalysisPackage{
+					Name:             pkgCalling,
+					Types:            make(map[string]inUse),
+					PackageFunctions: make(LevelFunction, 0, 32),
+				}
+
+				packagesMap[pkgCalling] = pkgEntry
+			}
+		}
 
 		for ix, file := range packageFound.Syntax {
 			if ix >= len(packageFound.GoFiles) { // checks the assumption that GoFiles match Syntax 1:1.
@@ -122,6 +138,20 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 							usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 							usages[key] = usage
+
+							// attach function to package
+							if pkgEntry != nil {
+								pkgEntry.PackageFunctions = append(pkgEntry.PackageFunctions, *usage)
+
+								// register types in package
+								for _, t := range usage.TypesParams {
+									pkgEntry.Types[t] = false
+								}
+
+								for _, t := range usage.TypesResults {
+									pkgEntry.Types[t] = false
+								}
+							}
 						}
 
 						return true
@@ -165,6 +195,20 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 						usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 						usages[key] = usage
+
+						// attach function to package
+						if pkgEntry != nil {
+							pkgEntry.PackageFunctions = append(pkgEntry.PackageFunctions, *usage)
+
+							// register types in package
+							for _, t := range usage.TypesParams {
+								pkgEntry.Types[t] = true
+							}
+
+							for _, t := range usage.TypesResults {
+								pkgEntry.Types[t] = true
+							}
+						}
 					}
 
 					usage.updateOccurences(pkgCalling, pkgCalled, isTest)
@@ -181,8 +225,15 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 		resultAnalysisFunction = append(resultAnalysisFunction, *usage)
 	}
 
+	resultPackages := make(LevelPackage, 0, len(packagesMap))
+
+	for _, pkg := range packagesMap {
+		resultPackages = append(resultPackages, *pkg)
+	}
+
 	return &Analysis{
 			LevelFunction: resultAnalysisFunction,
+			LevelPackage:  resultPackages,
 		},
 		nil
 }
