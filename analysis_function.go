@@ -65,9 +65,9 @@ func (fa *AnalysisFunction) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-type Analysis []AnalysisFunction
+type LevelFunction []AnalysisFunction
 
-func (a Analysis) PrintWith(printer *Printer) {
+func (a LevelFunction) PrintWith(printer *Printer) {
 	fmt.Println(
 		strings.Join(printer.columns, ", "),
 	)
@@ -110,7 +110,7 @@ func (a Analysis) PrintWith(printer *Printer) {
 	}
 }
 
-func (a Analysis) String() string {
+func (a LevelFunction) String() string {
 	lines := make([]string, 0, 1+len(a))
 
 	lines = append(

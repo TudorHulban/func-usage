@@ -1,7 +1,7 @@
 package funcusage
 
-func (a Analysis) Where(predicate func(AnalysisFunction) bool) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) Where(predicate func(AnalysisFunction) bool) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if predicate(usage) {

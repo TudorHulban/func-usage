@@ -46,7 +46,7 @@ func (a *Analyzer) loadPackages() ([]*packages.Package, error) {
 	return packages.Load(cfg, "./...")
 }
 
-func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, error) { //nolint:revive,cognitive-complexity
+func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, error) { //nolint:revive,cognitive-complexity
 	packagesLoaded, errLoad := a.loadPackages()
 	if errLoad != nil {
 		return nil,
@@ -175,12 +175,14 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 		}
 	}
 
-	result := make([]AnalysisFunction, 0, len(usages))
+	resultAnalysisFunction := make([]AnalysisFunction, 0, len(usages))
 
 	for _, usage := range usages {
-		result = append(result, *usage)
+		resultAnalysisFunction = append(resultAnalysisFunction, *usage)
 	}
 
-	return result,
+	return &Analysis{
+			LevelFunction: resultAnalysisFunction,
+		},
 		nil
 }

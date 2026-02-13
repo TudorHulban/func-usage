@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type AnalysisGroupedByPackage map[namePackage]Analysis
+type AnalysisGroupedByPackage map[namePackage]LevelFunction
 
 func (a AnalysisGroupedByPackage) PrintWith(printer *Printer) {
 	pkgNames := make([]string, 0, len(a))
@@ -30,8 +30,8 @@ func (a AnalysisGroupedByPackage) PrintWith(printer *Printer) {
 	}
 }
 
-func (a Analysis) GroupedByPackage() AnalysisGroupedByPackage {
-	result := make(map[namePackage]Analysis)
+func (a LevelFunction) GroupedByPackage() AnalysisGroupedByPackage {
+	result := make(map[namePackage]LevelFunction)
 
 	for _, fa := range a {
 		pkg, errPackage := fa.getPackage()
@@ -50,7 +50,7 @@ func (a Analysis) GroupedByPackage() AnalysisGroupedByPackage {
 	return result
 }
 
-type AnalysisGroupedByObject map[nameObject]Analysis
+type AnalysisGroupedByObject map[nameObject]LevelFunction
 
 func (a AnalysisGroupedByObject) PrintWith(printer *Printer) {
 	objectNames := make([]string, 0, len(a))
@@ -78,8 +78,8 @@ func (a AnalysisGroupedByObject) PrintWith(printer *Printer) {
 	}
 }
 
-func (a Analysis) GroupedByObject() AnalysisGroupedByObject {
-	result := make(map[nameObject]Analysis)
+func (a LevelFunction) GroupedByObject() AnalysisGroupedByObject {
+	result := make(map[nameObject]LevelFunction)
 
 	for _, fa := range a {
 		result[fa.MethodOf] = append(result[fa.MethodOf], fa)
@@ -88,7 +88,7 @@ func (a Analysis) GroupedByObject() AnalysisGroupedByObject {
 	return result
 }
 
-type AnalysisGroupedByPackageAndObject map[namePackage]map[nameObject]Analysis
+type AnalysisGroupedByPackageAndObject map[namePackage]map[nameObject]LevelFunction
 
 func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 	packageNames := make([]string, 0, len(a))
@@ -126,8 +126,8 @@ func (a AnalysisGroupedByPackageAndObject) PrintWith(printer *Printer) {
 	}
 }
 
-func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject {
-	result := make(map[namePackage]map[nameObject]Analysis)
+func (a LevelFunction) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject {
+	result := make(map[namePackage]map[nameObject]LevelFunction)
 
 	for _, fa := range a {
 		keyPackage, errPackage := fa.getPackage()
@@ -147,7 +147,7 @@ func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject 
 
 		// Initialize package map if needed
 		if result[keyPackage] == nil {
-			result[keyPackage] = make(map[nameObject]Analysis)
+			result[keyPackage] = make(map[nameObject]LevelFunction)
 		}
 
 		// Append to object group
@@ -160,7 +160,7 @@ func (a Analysis) GroupedByPackageAndObject() AnalysisGroupedByPackageAndObject 
 	return result
 }
 
-type AnalysisGroupedBySignature map[string]Analysis
+type AnalysisGroupedBySignature map[string]LevelFunction
 
 func (a AnalysisGroupedBySignature) PrintWith(printer *Printer) {
 	signatures := make([]string, 0, len(a))
@@ -188,7 +188,7 @@ func (a AnalysisGroupedBySignature) PrintWith(printer *Printer) {
 	}
 }
 
-func (a Analysis) GroupedByParamSignature() AnalysisGroupedBySignature {
+func (a LevelFunction) GroupedByParamSignature() AnalysisGroupedBySignature {
 	result := make(AnalysisGroupedBySignature, len(a))
 
 	for _, usage := range a {
@@ -202,7 +202,7 @@ func (a Analysis) GroupedByParamSignature() AnalysisGroupedBySignature {
 	return result
 }
 
-func (a Analysis) GroupedByResultSignature() AnalysisGroupedBySignature {
+func (a LevelFunction) GroupedByResultSignature() AnalysisGroupedBySignature {
 	result := make(AnalysisGroupedBySignature, len(a))
 
 	for _, usage := range a {

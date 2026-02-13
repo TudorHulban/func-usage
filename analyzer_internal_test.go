@@ -13,25 +13,32 @@ func TestLimit(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	fnSought := "Limit"
 
 	assert.NotEmpty(t,
-		usage.IsMethod().WhereNameIs(fnSought),
+		analysis.
+			LevelFunction.
+			IsMethod().
+			WhereNameIs(fnSought),
 	)
 
 	require.Empty(t,
-		usage.IsFunction().WhereNameIs(fnSought),
+		analysis.
+			LevelFunction.
+			IsFunction().
+			WhereNameIs(fnSought),
 	)
 
 	fmt.Println(
-		usage.
+		analysis.
+			LevelFunction.
 			IsMethod().
 			WhereNameIs(fnSought).String(),
 	)
@@ -42,15 +49,15 @@ func TestNoGroupingAnalysis(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	require.NotEmpty(t,
-		usage.IsMethod(),
+		analysis.LevelFunction.IsMethod(),
 	)
 
 	printer := NewPrinter().
@@ -59,7 +66,8 @@ func TestNoGroupingAnalysis(t *testing.T) {
 		WithTypesParams().
 		WithTypesResults()
 
-	usage.
+	analysis.
+		LevelFunction.
 		MethodOf("Analysis").
 		OrderByNameAsc().
 		PrintWith(printer)
@@ -70,20 +78,21 @@ func TestWithGroupingAnalysis(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	require.NotEmpty(t,
-		usage.IsMethod(),
+		analysis.LevelFunction.IsMethod(),
 	)
 
 	printer := NewPrinter().WithName()
 
-	usage.
+	analysis.
+		LevelFunction.
 		GroupedByObject().
 		PrintWith(printer)
 }
@@ -93,20 +102,23 @@ func TestDoubleGroupingAnalysis(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	require.NotEmpty(t,
-		usage.IsMethod(),
+		analysis.
+			LevelFunction.
+			IsMethod(),
 	)
 
 	printer := NewPrinter().WithName()
 
-	usage.
+	analysis.
+		LevelFunction.
 		GroupedByPackageAndObject().
 		PrintWith(printer)
 }
@@ -116,12 +128,12 @@ func TestUsageFilters(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	fnName := "Analyze"
 
@@ -129,7 +141,9 @@ func TestUsageFilters(t *testing.T) {
 		"1. WhereNameIs finds Analyze",
 		func(t *testing.T) {
 			require.NotEmpty(t,
-				usage.WhereNameIs(fnName),
+				analysis.
+					LevelFunction.
+					WhereNameIs(fnName),
 			)
 		},
 	)
@@ -138,7 +152,9 @@ func TestUsageFilters(t *testing.T) {
 		"2. WhereExported finds exports",
 		func(t *testing.T) {
 			require.NotEmpty(t,
-				usage.WhereExported(),
+				analysis.
+					LevelFunction.
+					WhereExported(),
 			)
 		},
 	)
@@ -147,7 +163,10 @@ func TestUsageFilters(t *testing.T) {
 		"3. Limit - test zero limit",
 		func(t *testing.T) {
 			require.Empty(t,
-				usage.WhereNameIs(fnName).Limit(0),
+				analysis.
+					LevelFunction.
+					WhereNameIs(fnName).
+					Limit(0),
 			)
 		},
 	)
@@ -156,7 +175,10 @@ func TestUsageFilters(t *testing.T) {
 		"4. Limit - test different than zero value",
 		func(t *testing.T) {
 			require.Len(t,
-				usage.WhereNameIs(fnName).Limit(1),
+				analysis.
+					LevelFunction.
+					WhereNameIs(fnName).
+					Limit(1),
 				1,
 			)
 		},
@@ -166,7 +188,8 @@ func TestUsageFilters(t *testing.T) {
 		"5. Limit - test chaining",
 		func(t *testing.T) {
 			require.Len(t,
-				usage.
+				analysis.
+					LevelFunction.
 					WhereTestedInternally().
 					WhereNameIs(fnName).
 					Limit(1),
@@ -179,8 +202,15 @@ func TestUsageFilters(t *testing.T) {
 		"6. Limit - beyond length",
 		func(t *testing.T) {
 			require.Len(t,
-				usage.WhereNameIs(fnName).Limit(100),
-				len(usage.WhereNameIs(fnName)),
+				analysis.
+					LevelFunction.
+					WhereNameIs(fnName).
+					Limit(100),
+
+				len(analysis.
+					LevelFunction.
+					WhereNameIs(fnName),
+				),
 			)
 		},
 	)
@@ -191,15 +221,17 @@ func TestSignatureGrouping(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	require.NotEmpty(t,
-		usage.IsMethod(),
+		analysis.
+			LevelFunction.
+			IsMethod(),
 	)
 
 	printer := NewPrinter().
@@ -208,7 +240,8 @@ func TestSignatureGrouping(t *testing.T) {
 		WithTypesParams().
 		WithTypesResults()
 
-	usage.
+	analysis.
+		LevelFunction.
 		GroupedByParamSignature().
 		PrintWith(printer)
 }

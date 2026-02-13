@@ -1,6 +1,6 @@
 package funcusage
 
-type analysis struct {
-	LevelFunction []AnalysisFunction
+type Analysis struct {
+	LevelFunction LevelFunction
 	LevelPackage  []AnalysisPackage
 }

@@ -2,8 +2,8 @@ package funcusage
 
 import "slices"
 
-func (a Analysis) WithNoParams() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WithNoParams() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if len(usage.TypesParams) == 0 {
@@ -14,8 +14,8 @@ func (a Analysis) WithNoParams() Analysis {
 	return result
 }
 
-func (a Analysis) WithNoResults() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WithNoResults() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if len(usage.TypesResults) == 0 {
@@ -26,8 +26,8 @@ func (a Analysis) WithNoResults() Analysis {
 	return result
 }
 
-func (a Analysis) WithErrorReturn() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WithErrorReturn() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if slices.Contains(usage.TypesResults, "error") {
@@ -38,8 +38,8 @@ func (a Analysis) WithErrorReturn() Analysis {
 	return result
 }
 
-func (a Analysis) AcceptingOnly(typeNames ...string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) AcceptingOnly(typeNames ...string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if unorderedButSameItems(usage.TypesParams, typeNames) {
@@ -50,8 +50,8 @@ func (a Analysis) AcceptingOnly(typeNames ...string) Analysis {
 	return result
 }
 
-func (a Analysis) ReturningOnly(typeNames ...string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) ReturningOnly(typeNames ...string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if unorderedButSameItems(usage.TypesResults, typeNames) {
@@ -62,8 +62,8 @@ func (a Analysis) ReturningOnly(typeNames ...string) Analysis {
 	return result
 }
 
-func (a Analysis) Accepting(typeNames ...string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) Accepting(typeNames ...string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if unorderedButContainsAll(usage.TypesParams, typeNames) {
@@ -74,8 +74,8 @@ func (a Analysis) Accepting(typeNames ...string) Analysis {
 	return result
 }
 
-func (a Analysis) Returning(typeNames ...string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) Returning(typeNames ...string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if unorderedButContainsAll(usage.TypesResults, typeNames) {

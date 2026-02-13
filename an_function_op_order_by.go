@@ -2,8 +2,8 @@ package funcusage
 
 import "sort"
 
-func (a Analysis) OrderByTotalCallsDesc() Analysis {
-	result := make(Analysis, len(a))
+func (a LevelFunction) OrderByTotalCallsDesc() LevelFunction {
+	result := make(LevelFunction, len(a))
 	copy(result, a)
 
 	sort.Slice(
@@ -18,8 +18,8 @@ func (a Analysis) OrderByTotalCallsDesc() Analysis {
 	return result
 }
 
-func (a Analysis) OrderByTotalCallsAsc() Analysis {
-	result := make(Analysis, len(a))
+func (a LevelFunction) OrderByTotalCallsAsc() LevelFunction {
+	result := make(LevelFunction, len(a))
 	copy(result, a)
 
 	sort.Slice(
@@ -35,8 +35,8 @@ func (a Analysis) OrderByTotalCallsAsc() Analysis {
 	return result
 }
 
-func (a Analysis) OrderByExternalCallsDesc() Analysis {
-	result := make(Analysis, len(a))
+func (a LevelFunction) OrderByExternalCallsDesc() LevelFunction {
+	result := make(LevelFunction, len(a))
 	copy(result, a)
 
 	sort.Slice(
@@ -53,8 +53,8 @@ func (a Analysis) OrderByExternalCallsDesc() Analysis {
 	return result
 }
 
-func (a Analysis) OrderByNameAsc() Analysis {
-	result := make(Analysis, len(a))
+func (a LevelFunction) OrderByNameAsc() LevelFunction {
+	result := make(LevelFunction, len(a))
 	copy(result, a)
 
 	sort.Slice(
@@ -67,8 +67,8 @@ func (a Analysis) OrderByNameAsc() Analysis {
 	return result
 }
 
-func (a Analysis) OrderByNameDesc() Analysis {
-	result := make(Analysis, len(a))
+func (a LevelFunction) OrderByNameDesc() LevelFunction {
+	result := make(LevelFunction, len(a))
 	copy(result, a)
 
 	sort.Slice(

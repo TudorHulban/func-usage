@@ -2,20 +2,20 @@ package funcusage
 
 // built from primitives
 
-func (a Analysis) MostUsed(n int) Analysis {
+func (a LevelFunction) MostUsed(n int) LevelFunction {
 	return a.OrderByTotalCallsDesc().Limit(n)
 }
 
-func (a Analysis) LeastUsed(n int) Analysis {
+func (a LevelFunction) LeastUsed(n int) LevelFunction {
 	return a.OrderByTotalCallsAsc().Limit(n)
 }
 
-func (a Analysis) ExportedWithNoExternalCalls() Analysis {
+func (a LevelFunction) ExportedWithNoExternalCalls() LevelFunction {
 	return a.WhereExported().Where(func(fn AnalysisFunction) bool {
 		return fn.ExternalCount == 0 && fn.InternalCount > 0
 	})
 }
 
-func (a Analysis) ExportedUnused() Analysis {
+func (a LevelFunction) ExportedUnused() LevelFunction {
 	return a.WhereExported().WhereUnused()
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func (a Analysis) WhereNameIs(name string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereNameIs(name string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if usage.Name == name {
@@ -16,8 +16,8 @@ func (a Analysis) WhereNameIs(name string) Analysis {
 	return result
 }
 
-func (a Analysis) WherePackageIs(name string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WherePackageIs(name string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		packageName, errPackage := usage.getPackage()
@@ -38,8 +38,8 @@ func (a Analysis) WherePackageIs(name string) Analysis {
 	return result
 }
 
-func (a Analysis) WhereUnused() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereUnused() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if usage.InternalCount == 0 && usage.ExternalCount == 0 {
@@ -50,8 +50,8 @@ func (a Analysis) WhereUnused() Analysis {
 	return result
 }
 
-func (a Analysis) WhereExported() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereExported() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if isExportedName(usage.Name) {
@@ -62,8 +62,8 @@ func (a Analysis) WhereExported() Analysis {
 	return result
 }
 
-func (a Analysis) WhereUnexported() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereUnexported() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if !isExportedName(usage.Name) {
@@ -74,8 +74,8 @@ func (a Analysis) WhereUnexported() Analysis {
 	return result
 }
 
-func (a Analysis) WhereNotTested() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereNotTested() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if usage.InternalTestsCount == 0 && usage.ExternalTestsCount == 0 {
@@ -86,8 +86,8 @@ func (a Analysis) WhereNotTested() Analysis {
 	return result
 }
 
-func (a Analysis) WhereTestedInternally() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereTestedInternally() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if usage.InternalTestsCount > 0 {
@@ -98,8 +98,8 @@ func (a Analysis) WhereTestedInternally() Analysis {
 	return result
 }
 
-func (a Analysis) WhereTestedExternally() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) WhereTestedExternally() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if usage.ExternalTestsCount > 0 {

@@ -4,8 +4,8 @@ import (
 	"strings"
 )
 
-func (a Analysis) IsFunction() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) IsFunction() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if len(usage.MethodOf) == 0 {
@@ -16,8 +16,8 @@ func (a Analysis) IsFunction() Analysis {
 	return result
 }
 
-func (a Analysis) IsMethod() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) IsMethod() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if len(usage.MethodOf) > 0 {
@@ -28,8 +28,8 @@ func (a Analysis) IsMethod() Analysis {
 	return result
 }
 
-func (a Analysis) MethodOf(objectName string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) MethodOf(objectName string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	// Trim leading * for comparison
 	objectName = strings.TrimPrefix(objectName, "*")
@@ -43,8 +43,8 @@ func (a Analysis) MethodOf(objectName string) Analysis {
 	return result
 }
 
-func (a Analysis) MethodLike(substr string) Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) MethodLike(substr string) LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if strings.Contains(string(usage.MethodOf), substr) {
@@ -55,8 +55,8 @@ func (a Analysis) MethodLike(substr string) Analysis {
 	return result
 }
 
-func (a Analysis) MethodOfPointerReceiver() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) MethodOfPointerReceiver() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if strings.HasPrefix(string(usage.MethodOf), "*") {
@@ -67,8 +67,8 @@ func (a Analysis) MethodOfPointerReceiver() Analysis {
 	return result
 }
 
-func (a Analysis) MethodOfValueReceiver() Analysis {
-	result := make(Analysis, 0, len(a))
+func (a LevelFunction) MethodOfValueReceiver() LevelFunction {
+	result := make(LevelFunction, 0, len(a))
 
 	for _, usage := range a {
 		if usage.MethodOf != "" && !strings.HasPrefix(string(usage.MethodOf), "*") {
