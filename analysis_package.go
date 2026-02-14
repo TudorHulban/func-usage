@@ -61,6 +61,19 @@ func (level LevelPackage) String() string {
 	return strings.Join(lines, "\n")
 }
 
+// StatisticsForPackage reports metrics only for functions defined in this package.
+//
+// Notes:
+//   - PackageFunctions contains only functions declared in the real package
+//     (no *_test.go, no external test packages, no synthetic test packages).
+//   - Global analysis (LevelFunction) also includes:
+//   - functions from *_test.go
+//   - functions from external test packages (package xxx_test)
+//   - synthetic test/binary functions (init, main, helpers)
+//   - Therefore, counts in package statistics (functions, methods, untested,
+//     unused, etc.) can legitimately differ from the global analysis numbers.
+//     Package-level stats are the "production/package view", while LevelFunction
+//     is the "full view including tests".
 func (level LevelPackage) StatisticsForPackage(forModulePath, pkgName string) string {
 	var b strings.Builder
 
@@ -169,6 +182,12 @@ func (level LevelPackage) StatisticsForPackage(forModulePath, pkgName string) st
 	return b.String()
 }
 
+// Package statistics intentionally exclude test-only functions.
+// PackageFunctions contains only functions declared in the real package
+// (no *_test.go, no external test packages, no synthetic test packages).
+// Global analysis (LevelFunction) includes all of these.
+// Therefore, comparing package statistics with the global function list
+// will show differences. This is by design, not a bug.
 func (level LevelPackage) Statistics(forModulePath string) string {
 	var b strings.Builder
 
