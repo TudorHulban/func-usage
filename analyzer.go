@@ -141,7 +141,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 
 							// attach function to package
 							if pkgEntry != nil {
-								pkgEntry.PackageFunctions = append(pkgEntry.PackageFunctions, *usage)
+								pkgEntry.PackageFunctions = append(pkgEntry.PackageFunctions, usage)
 
 								// register types in package
 								for _, t := range usage.TypesParams {
@@ -205,10 +205,10 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 		}
 	}
 
-	resultAnalysisFunction := make([]AnalysisFunction, 0, len(usages))
+	resultAnalysisFunction := make([]*AnalysisFunction, 0, len(usages))
 
 	for _, usage := range usages {
-		resultAnalysisFunction = append(resultAnalysisFunction, *usage)
+		resultAnalysisFunction = append(resultAnalysisFunction, usage)
 	}
 
 	resultPackages := make(LevelPackage, 0, len(packagesMap))

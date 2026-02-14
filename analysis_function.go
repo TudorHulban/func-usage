@@ -65,7 +65,7 @@ func (fa *AnalysisFunction) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-type LevelFunction []AnalysisFunction
+type LevelFunction []*AnalysisFunction
 
 func (level LevelFunction) PrintWith(printer *Printer) {
 	fmt.Println(

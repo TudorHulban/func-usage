@@ -11,9 +11,13 @@ func (level LevelFunction) LeastUsed(n int) LevelFunction {
 }
 
 func (level LevelFunction) ExportedWithNoExternalCalls() LevelFunction {
-	return level.WhereExported().Where(func(fn AnalysisFunction) bool {
-		return fn.ExternalCount == 0 && fn.InternalCount > 0
-	})
+	return level.
+		WhereExported().
+		Where(
+			func(fn AnalysisFunction) bool {
+				return fn.ExternalCount == 0 && fn.InternalCount > 0
+			},
+		)
 }
 
 func (level LevelFunction) ExportedUnused() LevelFunction {

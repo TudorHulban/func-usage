@@ -110,8 +110,10 @@ func (level LevelPackage) StatisticsForPackage(forModulePath, pkgName string) st
 			avgMethods = float64(methodCount) / float64(len(methodsPerObject))
 		}
 
-		maxMethods := 0
-		var maxObject string
+		var (
+			maxMethods int
+			maxObject  string
+		)
 
 		for obj, count := range methodsPerObject {
 			if count > maxMethods {

@@ -13,7 +13,7 @@ func TestStatistics(t *testing.T) {
 	require.NotNil(t, a)
 
 	analysis, errAnalyze := a.Analyze(
-		ModeDefault,
+		ModeIncludeTestsForCoverage,
 		false,
 	)
 	require.NoError(t, errAnalyze)
@@ -42,6 +42,8 @@ func TestStatistics(t *testing.T) {
 	)
 
 	fmt.Println(
-		analysis.LevelPackage.Statistics(a.ModulePath),
+		analysis.
+			LevelPackage.
+			Statistics(a.ModulePath),
 	)
 }
