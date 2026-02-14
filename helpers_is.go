@@ -43,7 +43,7 @@ func isTestFile(filename string) bool {
 	return strings.HasSuffix(filename, "_test.go")
 }
 
-func isSyntheticTestPackage(id string) bool {
+func isRelevantPackage(id string) bool {
 	if strings.HasSuffix(id, ".test") {
 		return true
 	}

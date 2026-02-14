@@ -61,14 +61,16 @@ func (level LevelPackage) String() string {
 	return strings.Join(lines, "\n")
 }
 
-func (level LevelPackage) Statistics(forModulePath string) string {
+func (level LevelPackage) StatisticsForPackage(forModulePath, pkgName string) string {
 	var b strings.Builder
 
 	for _, pkg := range level {
-		funcCount := len(pkg.PackageFunctions)
+		if pkg.Name != pkgName {
+			continue
+		}
 
 		methodCount := 0
-		methodsPerReceiver := make(map[string]int)
+		methodsPerObject := make(map[string]int)
 
 		untested := 0
 		unused := 0
@@ -76,37 +78,46 @@ func (level LevelPackage) Statistics(forModulePath string) string {
 		internalCalls := 0
 		externalCalls := 0
 
-		for _, fn := range pkg.PackageFunctions {
-			// methods
-			if fn.MethodOf != "" {
+		for _, fa := range pkg.PackageFunctions {
+			if len(fa.MethodOf) != 0 {
 				methodCount++
-				methodsPerReceiver[string(fn.MethodOf)]++
+				methodsPerObject[string(fa.MethodOf)]++
 			}
 
 			// untested
-			if fn.InternalTestsCount+fn.ExternalTestsCount == 0 {
+			if fa.InternalTestsCount+fa.ExternalTestsCount == 0 {
 				untested++
 			}
 
 			// unused
-			totalCalls := fn.InternalCount +
-				fn.ExternalCount +
-				fn.InternalTestsCount +
-				fn.ExternalTestsCount
+			totalCalls := fa.InternalCount +
+				fa.ExternalCount +
+				fa.InternalTestsCount +
+				fa.ExternalTestsCount
 
 			if totalCalls == 0 {
 				unused++
 			}
 
 			// cohesion
-			internalCalls += fn.InternalCount
-			externalCalls += fn.ExternalCount
+			internalCalls = internalCalls + fa.InternalCount
+			externalCalls = externalCalls + fa.ExternalCount
 		}
 
 		// avg methods per object
-		avgMethods := 0.0
-		if len(methodsPerReceiver) > 0 {
-			avgMethods = float64(methodCount) / float64(len(methodsPerReceiver))
+		var avgMethods float64
+		if len(methodsPerObject) > 0 {
+			avgMethods = float64(methodCount) / float64(len(methodsPerObject))
+		}
+
+		maxMethods := 0
+		var maxObject string
+
+		for obj, count := range methodsPerObject {
+			if count > maxMethods {
+				maxMethods = count
+				maxObject = obj
+			}
 		}
 
 		// cohesion score
@@ -120,6 +131,7 @@ func (level LevelPackage) Statistics(forModulePath string) string {
 
 		for t, used := range pkg.Types {
 			base := t
+
 			for strings.HasPrefix(base, "*") {
 				base = base[1:]
 			}
@@ -131,10 +143,13 @@ func (level LevelPackage) Statistics(forModulePath string) string {
 
 		// print
 		fmt.Fprintf(&b, "Package: %s\n", pkg.Name)
-		fmt.Fprintf(&b, "Functions: %d\n", funcCount)
+
+		fmt.Fprintf(&b, "Functions and Methods: %d\n", len(pkg.PackageFunctions))
 		fmt.Fprintf(&b, "Methods: %d\n", methodCount)
-		fmt.Fprintf(&b, "Avg methods per object: %.2f\n", avgMethods)
+
 		fmt.Fprintf(&b, "Types: %d\n", len(pkg.Types))
+		fmt.Fprintf(&b, "Avg methods per object: %.2f\n", avgMethods)
+		fmt.Fprintf(&b, "Max methods per object: %d (%s)\n", maxMethods, maxObject)
 
 		fmt.Fprintf(&b, "Untested functions: %d\n", untested)
 		fmt.Fprintf(&b, "Unused functions: %d\n", unused)
@@ -147,6 +162,18 @@ func (level LevelPackage) Statistics(forModulePath string) string {
 				fmt.Fprintf(&b, "%d. %s\n", i+1, t)
 			}
 		}
+	}
+
+	return b.String()
+}
+
+func (level LevelPackage) Statistics(forModulePath string) string {
+	var b strings.Builder
+
+	for _, pkg := range level {
+		b.WriteString(
+			level.StatisticsForPackage(forModulePath, pkg.Name),
+		)
 	}
 
 	return b.String()

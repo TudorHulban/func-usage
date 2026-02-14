@@ -13,7 +13,7 @@ func TestStatistics(t *testing.T) {
 	require.NotNil(t, a)
 
 	analysis, errAnalyze := a.Analyze(
-		ModeIncludeTestsForCoverage,
+		ModeDefault,
 		false,
 	)
 	require.NoError(t, errAnalyze)

@@ -68,7 +68,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 
 		var pkgEntry *AnalysisPackage
 
-		if !isSyntheticTestPackage(packageFoundID) {
+		if !isRelevantPackage(packageFoundID) {
 			pkgEntry = packagesMap[packageFoundID]
 			if pkgEntry == nil {
 				pkgEntry = &AnalysisPackage{
