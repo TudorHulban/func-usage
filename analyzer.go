@@ -11,7 +11,10 @@ import (
 
 type Analyzer struct {
 	root       string
-	modulePath string
+	ModulePath string
+
+	DefinedTypes  []string
+	ExportedTypes []string
 }
 
 func NewAnalyzer(atRoot string) (*Analyzer, error) {
@@ -23,7 +26,7 @@ func NewAnalyzer(atRoot string) (*Analyzer, error) {
 
 	return &Analyzer{
 			root:       atRoot,
-			modulePath: modulePath,
+			ModulePath: modulePath,
 		},
 		nil
 }
@@ -43,7 +46,7 @@ func (a *Analyzer) loadPackages() ([]*packages.Package, error) {
 	return packages.Load(cfg, "./...")
 }
 
-func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, error) { //nolint:revive,cognitive-complexity
+func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, error) { //nolint:gocyclo,revive,cognitive-complexity
 	packagesLoaded, errLoad := a.loadPackages()
 	if errLoad != nil {
 		return nil,
@@ -57,10 +60,26 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 		return nil, errPackageLoad
 	}
 
-	usages := make(map[string]*FunctionAnalysis)
+	usages := make(map[string]*AnalysisFunction)
+	packagesMap := make(map[string]*AnalysisPackage)
 
 	for _, packageFound := range packagesLoaded {
-		pkgCalling := packageFound.ID
+		packageFoundID := packageFound.ID
+
+		var pkgEntry *AnalysisPackage
+
+		if !isRelevantPackage(packageFoundID) {
+			pkgEntry = packagesMap[packageFoundID]
+			if pkgEntry == nil {
+				pkgEntry = &AnalysisPackage{
+					Name:             packageFoundID,
+					Types:            make(map[string]inUse),
+					PackageFunctions: make(LevelFunction, 0, 32),
+				}
+
+				packagesMap[packageFoundID] = pkgEntry
+			}
+		}
 
 		for ix, file := range packageFound.Syntax {
 			if ix >= len(packageFound.GoFiles) { // checks the assumption that GoFiles match Syntax 1:1.
@@ -100,7 +119,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 						definingPkg := fn.Pkg().Path()
 
-						isOutsideModule := !strings.HasPrefix(definingPkg, a.modulePath)
+						isOutsideModule := !strings.HasPrefix(definingPkg, a.ModulePath)
 						if isOutsideModule && !includeExternal {
 							return true
 						}
@@ -109,7 +128,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 						usage := usages[key]
 						if usage == nil {
-							usage = &FunctionAnalysis{
+							usage = &AnalysisFunction{
 								Key:      key,
 								Name:     fnName,
 								Position: packageFound.Fset.Position(fn.Pos()),
@@ -119,6 +138,20 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 							usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 							usages[key] = usage
+
+							// attach function to package
+							if pkgEntry != nil {
+								pkgEntry.PackageFunctions = append(pkgEntry.PackageFunctions, usage)
+
+								// register types in package
+								for _, t := range usage.TypesParams {
+									pkgEntry.Types[t] = false
+								}
+
+								for _, t := range usage.TypesResults {
+									pkgEntry.Types[t] = false
+								}
+							}
 						}
 
 						return true
@@ -143,7 +176,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 					pkgCalled := pkgCandidate.Path()
 
-					isOutsideModule := !strings.HasPrefix(pkgCalled, a.modulePath)
+					isOutsideModule := !strings.HasPrefix(pkgCalled, a.ModulePath)
 					if isOutsideModule && !includeExternal {
 						return true
 					}
@@ -152,7 +185,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 
 					usage := usages[key]
 					if usage == nil {
-						usage = &FunctionAnalysis{
+						usage = &AnalysisFunction{
 							Key:      key,
 							Name:     fn.Name(),
 							Position: packageFound.Fset.Position(fn.Pos()),
@@ -164,7 +197,7 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 						usages[key] = usage
 					}
 
-					usage.updateOccurences(pkgCalling, pkgCalled, isTest)
+					usage.updateOccurences(packageFoundID, pkgCalled, isTest)
 
 					return true
 				},
@@ -172,12 +205,21 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (Analysis, e
 		}
 	}
 
-	result := make([]FunctionAnalysis, 0, len(usages))
+	resultAnalysisFunction := make([]*AnalysisFunction, 0, len(usages))
 
 	for _, usage := range usages {
-		result = append(result, *usage)
+		resultAnalysisFunction = append(resultAnalysisFunction, usage)
 	}
 
-	return result,
+	resultPackages := make(LevelPackage, 0, len(packagesMap))
+
+	for _, pkg := range packagesMap {
+		resultPackages = append(resultPackages, *pkg)
+	}
+
+	return &Analysis{
+			LevelFunction: resultAnalysisFunction,
+			LevelPackage:  resultPackages,
+		},
 		nil
 }

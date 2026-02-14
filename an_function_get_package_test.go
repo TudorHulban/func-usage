@@ -58,7 +58,7 @@ func TestGetPackage(t *testing.T) {
 			func(t *testing.T) {
 				t.Parallel()
 
-				fa := &FunctionAnalysis{
+				fa := &AnalysisFunction{
 					Key: tc.key,
 				}
 

@@ -12,8 +12,8 @@ type (
 	nameObject  string
 )
 
-// FunctionAnalysis describes how a single function or method is used across the module.
-type FunctionAnalysis struct {
+// AnalysisFunction describes how a single function or method is used across the module.
+type AnalysisFunction struct {
 	// Key is the canonical identity of the function or method.
 	// Example (function): "github.com/me/project/pkg.DoThing"
 	// Example (method):   "github.com/me/project/pkg.(*User).Save"
@@ -47,7 +47,7 @@ type FunctionAnalysis struct {
 	ExternalTestsCount int
 }
 
-func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
+func (fa *AnalysisFunction) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
 	if strings.SplitN(callerPkg, " ", 2)[0] == calledPkg {
 		if callerIsTest {
 			fa.InternalTestsCount++
@@ -65,14 +65,14 @@ func (fa *FunctionAnalysis) updateOccurences(callerPkg, calledPkg string, caller
 	}
 }
 
-type Analysis []FunctionAnalysis
+type LevelFunction []*AnalysisFunction
 
-func (a Analysis) PrintWith(printer *Printer) {
+func (level LevelFunction) PrintWith(printer *Printer) {
 	fmt.Println(
 		strings.Join(printer.columns, ", "),
 	)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		var row []string
 
 		for _, col := range printer.columns {
@@ -110,15 +110,15 @@ func (a Analysis) PrintWith(printer *Printer) {
 	}
 }
 
-func (a Analysis) String() string {
-	lines := make([]string, 0, 1+len(a))
+func (level LevelFunction) String() string {
+	lines := make([]string, 0, 1+len(level))
 
 	lines = append(
 		lines,
 		"Name,Key,Method of,Location,Internal,InternalTests,External,ExternalTests,Total,TypesParams,TypesResults",
 	)
 
-	for _, fa := range a {
+	for _, fa := range level {
 		total := fa.InternalCount +
 			fa.InternalTestsCount +
 			fa.ExternalCount +

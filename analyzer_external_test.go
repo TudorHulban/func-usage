@@ -12,12 +12,12 @@ func TestExternalAnalyzer(t *testing.T) {
 	require.NoError(t, errCr)
 	require.NotNil(t, a)
 
-	usage, errAnalyze := a.Analyze(
+	analysis, errAnalyze := a.Analyze(
 		funcusage.ModeIncludeTestsForCoverage,
 		true,
 	)
 	require.NoError(t, errAnalyze)
-	require.NotZero(t, usage)
+	require.NotZero(t, analysis)
 
 	fnName := "Analyze"
 	packageName := "funcusage"
@@ -26,7 +26,7 @@ func TestExternalAnalyzer(t *testing.T) {
 		"1. WhereNameIs finds Analyze",
 		func(t *testing.T) {
 			require.NotEmpty(t,
-				usage.WhereNameIs(fnName),
+				analysis.LevelFunction.WhereNameIs(fnName),
 			)
 		},
 	)
@@ -35,7 +35,8 @@ func TestExternalAnalyzer(t *testing.T) {
 		"2. WhereExported finds exports",
 		func(t *testing.T) {
 			require.Empty(t,
-				usage.
+				analysis.
+					LevelFunction.
 					WhereNameIs(fnName).
 					WhereUnexported(),
 			)
@@ -46,7 +47,8 @@ func TestExternalAnalyzer(t *testing.T) {
 		"3. Limit - test chaining",
 		func(t *testing.T) {
 			require.Len(t,
-				usage.
+				analysis.
+					LevelFunction.
 					WhereTestedExternally().
 					WhereNameIs(fnName).
 					Limit(1),
@@ -59,7 +61,8 @@ func TestExternalAnalyzer(t *testing.T) {
 		"4. WherePackageIs",
 		func(t *testing.T) {
 			require.Len(t,
-				usage.
+				analysis.
+					LevelFunction.
 					WhereTestedExternally().
 					WherePackageIs(packageName).
 					WhereNameIs(fnName).
