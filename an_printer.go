@@ -22,6 +22,12 @@ func (p *Printer) WithMethodOf() *Printer {
 	return p
 }
 
+func (p *Printer) WithPosition() *Printer {
+	p.columns = append(p.columns, _LabelPosition)
+
+	return p
+}
+
 func (p *Printer) WithTotal() *Printer {
 	p.columns = append(p.columns, _LabelTotal)
 

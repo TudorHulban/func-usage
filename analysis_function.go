@@ -86,6 +86,9 @@ func (level LevelFunction) PrintWith(printer *Printer) {
 			case _LabelMethodOf:
 				row = append(row, string(fa.MethodOf))
 
+			case _LabelPosition:
+				row = append(row, fa.Position.String())
+
 			case _LabelTotal:
 				row = append(
 					row,
