@@ -103,3 +103,12 @@ func extractSignatureTypes(fn *types.Func) ([]string, []string) {
 
 	return params, results
 }
+
+func hasVariadic(fn *types.Func) bool {
+	signature, couldCast := fn.Type().(*types.Signature)
+	if !couldCast {
+		return false
+	}
+
+	return signature.Variadic()
+}

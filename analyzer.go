@@ -129,12 +129,13 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 						usage := usages[key]
 						if usage == nil {
 							usage = &AnalysisFunction{
-								Key:      key,
-								Name:     fnName,
-								Position: packageFound.Fset.Position(fn.Pos()),
+								Key:         key,
+								Name:        fnName,
+								MethodOf:    extractMethodOf(fn),
+								Position:    packageFound.Fset.Position(fn.Pos()),
+								HasVariadic: hasVariadic(fn),
 							}
 
-							usage.MethodOf = extractMethodOf(fn)
 							usage.TypesParams, usage.TypesResults = extractSignatureTypes(fn)
 
 							usages[key] = usage
@@ -186,9 +187,11 @@ func (a Analyzer) Analyze(inMode AnalyzeMode, includeExternal bool) (*Analysis, 
 					usage := usages[key]
 					if usage == nil {
 						usage = &AnalysisFunction{
-							Key:      key,
-							Name:     fn.Name(),
-							Position: packageFound.Fset.Position(fn.Pos()),
+							Key:         key,
+							Name:        fn.Name(),
+							MethodOf:    extractMethodOf(fn),
+							Position:    packageFound.Fset.Position(fn.Pos()),
+							HasVariadic: hasVariadic(fn),
 						}
 
 						usage.MethodOf = extractMethodOf(fn)

@@ -45,6 +45,8 @@ type AnalysisFunction struct {
 
 	// ExternalTestsCount is the number of calls from other packages tests.
 	ExternalTestsCount int
+
+	HasVariadic bool
 }
 
 func (fa *AnalysisFunction) updateOccurences(callerPkg, calledPkg string, callerIsTest bool) {
@@ -148,4 +150,14 @@ func (level LevelFunction) String() string {
 	}
 
 	return strings.Join(lines, "\n")
+}
+
+func (level LevelFunction) GetFunctionNames() []string {
+	result := make([]string, len(level), len(level))
+
+	for ix, fa := range level {
+		result[ix] = fa.Name
+	}
+
+	return result
 }

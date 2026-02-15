@@ -8,9 +8,9 @@ import (
 func (level LevelFunction) WithNoParams() LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if len(usage.TypesParams) == 0 {
-			result = append(result, usage)
+	for _, fa := range level {
+		if len(fa.TypesParams) == 0 {
+			result = append(result, fa)
 		}
 	}
 
@@ -20,9 +20,9 @@ func (level LevelFunction) WithNoParams() LevelFunction {
 func (level LevelFunction) WithNoResults() LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if len(usage.TypesResults) == 0 {
-			result = append(result, usage)
+	for _, fa := range level {
+		if len(fa.TypesResults) == 0 {
+			result = append(result, fa)
 		}
 	}
 
@@ -32,9 +32,9 @@ func (level LevelFunction) WithNoResults() LevelFunction {
 func (level LevelFunction) WithErrorReturn() LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if slices.Contains(usage.TypesResults, "error") {
-			result = append(result, usage)
+	for _, fa := range level {
+		if slices.Contains(fa.TypesResults, "error") {
+			result = append(result, fa)
 		}
 	}
 
@@ -44,9 +44,9 @@ func (level LevelFunction) WithErrorReturn() LevelFunction {
 func (level LevelFunction) AcceptingOnly(typeNames ...string) LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if unorderedButSameItems(usage.TypesParams, typeNames) {
-			result = append(result, usage)
+	for _, fa := range level {
+		if unorderedButSameItems(fa.TypesParams, typeNames) {
+			result = append(result, fa)
 		}
 	}
 
@@ -56,9 +56,9 @@ func (level LevelFunction) AcceptingOnly(typeNames ...string) LevelFunction {
 func (level LevelFunction) ReturningOnly(typeNames ...string) LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if unorderedButSameItems(usage.TypesResults, typeNames) {
-			result = append(result, usage)
+	for _, fa := range level {
+		if unorderedButSameItems(fa.TypesResults, typeNames) {
+			result = append(result, fa)
 		}
 	}
 
@@ -68,9 +68,9 @@ func (level LevelFunction) ReturningOnly(typeNames ...string) LevelFunction {
 func (level LevelFunction) Accepting(typeNames ...string) LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if unorderedButContainsAll(usage.TypesParams, typeNames) {
-			result = append(result, usage)
+	for _, fa := range level {
+		if unorderedButContainsAll(fa.TypesParams, typeNames) {
+			result = append(result, fa)
 		}
 	}
 
@@ -82,10 +82,10 @@ func (level LevelFunction) AcceptingCaseInsensitiveLike(typeName string) LevelFu
 
 	lower := strings.ToLower(typeName)
 
-	for _, usage := range level {
-		for _, paramType := range usage.TypesParams {
+	for _, fa := range level {
+		for _, paramType := range fa.TypesParams {
 			if strings.Contains(strings.ToLower(paramType), lower) {
-				result = append(result, usage)
+				result = append(result, fa)
 
 				break // only one entry per function if multiple params match.
 			}
@@ -98,9 +98,9 @@ func (level LevelFunction) AcceptingCaseInsensitiveLike(typeName string) LevelFu
 func (level LevelFunction) Returning(typeNames ...string) LevelFunction {
 	result := make(LevelFunction, 0, len(level))
 
-	for _, usage := range level {
-		if unorderedButContainsAll(usage.TypesResults, typeNames) {
-			result = append(result, usage)
+	for _, fa := range level {
+		if unorderedButContainsAll(fa.TypesResults, typeNames) {
+			result = append(result, fa)
 		}
 	}
 
@@ -112,13 +112,25 @@ func (level LevelFunction) ReturningCaseInsensitiveLike(typeName string) LevelFu
 
 	lower := strings.ToLower(typeName)
 
-	for _, usage := range level {
-		for _, paramType := range usage.TypesResults {
+	for _, fa := range level {
+		for _, paramType := range fa.TypesResults {
 			if strings.Contains(strings.ToLower(paramType), lower) {
-				result = append(result, usage)
+				result = append(result, fa)
 
 				break // only one entry per function if multiple params match.
 			}
+		}
+	}
+
+	return result
+}
+
+func (level LevelFunction) HasVariadic() LevelFunction {
+	result := make(LevelFunction, 0, len(level))
+
+	for _, fa := range level {
+		if fa.HasVariadic {
+			result = append(result, fa)
 		}
 	}
 
