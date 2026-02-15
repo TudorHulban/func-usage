@@ -63,12 +63,13 @@ func TestNoGroupingAnalysis(t *testing.T) {
 	printer := NewPrinter().
 		WithName().
 		WithMethodOf().
+		WithPosition().
 		WithTypesParams().
 		WithTypesResults()
 
 	analysis.
 		LevelFunction.
-		MethodOf("Analysis").
+		MethodOf("LevelFunction").
 		OrderByNameAsc().
 		PrintWith(printer)
 }

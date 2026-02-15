@@ -70,6 +70,10 @@ linters:
       allow:
         - error
 
+    staticcheck:
+      checks:
+        - "-S1019"
+
     tagliatelle:
       case:
         rules:
